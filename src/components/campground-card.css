@@ -1,0 +1,20 @@
+.ui.card>.content>.header, .ui.cards>.card>.content>.header.campground-card__header {
+  display: flex;
+  align-items: center;
+}
+
+.campground-card__on-off {
+  font-size: 12px;
+  margin-left: auto;
+}
+
+.campground-card__label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.campground-card__label-text {
+  color: #999;
+  margin-right: 10px;
+}
