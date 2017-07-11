@@ -1,12 +1,19 @@
 import { combineReducers } from 'redux'
 import { createSelector } from 'reselect'
-import { updateObjectValue, toggleObjectValue } from '../helpers/reducerHelpers'
+import { toggleObjectValue, updateObjectValue } from '../helpers/reducerHelpers'
+import { compose } from 'ramda'
+import moment from 'moment'
 
-const FETCH = 'campground-finder/campgrounds/FETCH'
-const SELECT_DATE_OPTION = 'campground-finder/campgrounds/SELECT_DATE_OPTION'
+const SELET_DATE_OPTIION = 'campground-finder/campgrounds/SELET_DATE_OPTIION'
+const TOGGLE_WEEKENDS = 'campground-finder/campgrounds/TOGGLE_WEEKENDS'
 const TOGGLE_ACTIVE = 'campground-finder/campgrounds/TOGGLE_ACTIVE'
-export const ALL_WEEKENDS = 'campground-finder/campgrounds/ALL_WEEKENDS'
+const SET_DATES = 'campground-finder/campgrounds/SET_DATES'
+const SET_DATE_FOCUS = 'campground-finder/campgrounds/SET_DATE_FOCUS'
+
+export const NEXT_SIX_MONTHS = 'campground-finder/campgrounds/NEXT_SIX_MONTHS'
 export const SPECIFIC_DATES = 'campground-finder/campgrounds/SPECIFIC_DATES'
+export const START_DATE = 'startDate'
+export const END_DATE = 'endDate'
 
 const sampleIds = [1, 2]
 const sampleObjs = {
@@ -14,13 +21,19 @@ const sampleObjs = {
     id: 1,
     active: true,
     title: 'Big Basin',
-    dateOption: ALL_WEEKENDS
+    weekends: false,
+    dateOption: SPECIFIC_DATES,
+    startDate: moment(),
+    endDate: moment().add(4, 'months'),
+    focusedDate: null
   },
   2: {
     id: 2,
     active: false,
     title: 'Steep Ravine',
-    dateOption: SPECIFIC_DATES
+    weekends: true,
+    dateOption: NEXT_SIX_MONTHS,
+    focusedDate: null
   }
 }
 
@@ -32,16 +45,27 @@ function ids (state = sampleIds, action = {}) {
 }
 
 function objs (state = sampleObjs, action = {}) {
+  const toggleVal = toggleObjectValue(action.id)
   const updateObj = updateObjectValue(action.id)
 
   switch (action.type) {
-    case SELECT_DATE_OPTION: {
-      const updateDateOption = updateObj('dateOption', action.dateOption)
-      return updateDateOption(state)
+    case TOGGLE_WEEKENDS: {
+      return toggleVal('weekends', state)
     }
     case TOGGLE_ACTIVE: {
-      const toggleActive = toggleObjectValue(action.id, 'active')
-      return toggleActive(state)
+      return toggleVal('active', state)
+    }
+    case SELET_DATE_OPTIION: {
+      return updateObj('dateOption', action.dateOption, state)
+    }
+    case SET_DATES: {
+      return compose(
+        updateObj('startDate', action.startDate),
+        updateObj('endDate', action.endDate)
+      )(state)
+    }
+    case SET_DATE_FOCUS: {
+      return updateObj('focusedDate', action.focusedDate, state)
     }
     default:
       return state
@@ -55,9 +79,16 @@ export default combineReducers({
 
 export function selectDateOption (id, dateOption) {
   return {
-    type: SELECT_DATE_OPTION,
+    type: SELET_DATE_OPTIION,
     id,
     dateOption
+  }
+}
+
+export function toggleWeekends (id) {
+  return {
+    type: TOGGLE_WEEKENDS,
+    id
   }
 }
 
@@ -65,6 +96,23 @@ export function toggleActive (id) {
   return {
     type: TOGGLE_ACTIVE,
     id
+  }
+}
+
+export function setDates (id, startDate, endDate) {
+  return {
+    type: SET_DATES,
+    id,
+    startDate,
+    endDate
+  }
+}
+
+export function setDateFocus (id, focusedDate) {
+  return {
+    type: SET_DATE_FOCUS,
+    id,
+    focusedDate
   }
 }
 

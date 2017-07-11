@@ -18,3 +18,24 @@
   color: #999;
   margin-right: 10px;
 }
+
+.campground-card__sub-heading {
+  margin-bottom: 0.5em;
+}
+
+.campground-card .DateInput__display-text {
+  font-size: 12px;
+}
+
+.campground-card .DateRangePickerInput {
+  display: flex;
+  align-items: center;
+}
+
+.campground-card .DateInput {
+  width: auto;
+}
+
+.campground-card__form {
+  margin-bottom: 12px;
+}

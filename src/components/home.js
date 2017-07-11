@@ -5,7 +5,7 @@ import { Container } from 'semantic-ui-react'
 
 const Home = () => {
   return (
-    <section>
+    <section className='home'>
       <Container>
         <CampgroundsCollectionContainer />
       </Container>
