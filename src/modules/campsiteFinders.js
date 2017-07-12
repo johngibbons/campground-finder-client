@@ -142,7 +142,7 @@ function fetchAllFulfilled (campsiteFinders) {
 }
 
 export function updateCampsiteFinder (id, params) {
-  console.log(id)
+  console.log(params)
   return {
     type: UPDATE,
     id,
@@ -151,6 +151,7 @@ export function updateCampsiteFinder (id, params) {
 }
 
 function updateCampsiteFinderFulfilled (campsiteFinder) {
+  console.log(campsiteFinder)
   return {
     type: UPDATE_FULFILLED,
     campsiteFinder

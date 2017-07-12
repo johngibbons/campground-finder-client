@@ -39,3 +39,11 @@
 .campsite-finder-card__form {
   margin-bottom: 12px;
 }
+
+.campsite-finder-card .DateRangePicker {
+  max-width: 100%;
+}
+
+.campsite-finder-card .DateRangePicker__picker {
+  z-index: 3;
+}

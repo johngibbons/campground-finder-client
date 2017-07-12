@@ -4,6 +4,8 @@ import { Card, Checkbox, Form, Radio } from 'semantic-ui-react'
 import 'react-dates/lib/css/_datepicker.css'
 import { DateRangePicker } from 'react-dates'
 import { NEXT_SIX_MONTHS, SPECIFIC_DATES } from '../modules/campsiteFinders'
+import { both, map } from 'ramda'
+import { captializeTitle } from '../helpers/reducerHelpers'
 import moment from 'moment'
 
 const CampsiteFinderCard = ({
@@ -25,7 +27,7 @@ const CampsiteFinderCard = ({
     <Card className='campsite-finder-card'>
       <Card.Content extra>
         <Card.Header className='campsite-finder-card__header'>
-          {campgroundId.facilityName}
+          {captializeTitle(campgroundId.facilityName)}
           <div className='campsite-finder-card__on-off'>
             <label className='campsite-finder-card__label'>
               <span className='campsite-finder-card__label-text'>on/off</span>
@@ -80,8 +82,14 @@ const CampsiteFinderCard = ({
           <DateRangePicker
             startDate={startDate && moment(startDate)}
             endDate={endDate && moment(endDate)}
-            onDatesChange={({ startDate, endDate }) =>
-              handleSetDates(_id, startDate, endDate)}
+            onDatesChange={({ startDate, endDate }) => {
+              const params = { startDate, endDate }
+              const format = t => t.format()
+              const nullToStr = t => t || ''
+              const convert = both(nullToStr, format)
+              const makeParams = map(convert)
+              handleUpdateCampsiteFinder(_id, makeParams(params))
+            }}
             focusedInput={focusedDate}
             onFocusChange={focusedDate =>
               handleDateFocusChange(_id, focusedDate)}
