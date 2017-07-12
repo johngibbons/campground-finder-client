@@ -1,71 +1,94 @@
 import { combineReducers } from 'redux'
 import { createSelector } from 'reselect'
-import { toggleObjectValue, updateObjectValue } from '../helpers/reducerHelpers'
-import { compose } from 'ramda'
-import moment from 'moment'
+import {
+  mapObjsToIds,
+  renameKeys,
+  setToCapitalize
+} from '../helpers/reducerHelpers'
+import { take, compose, pick, map, path, keys, project } from 'ramda'
+import { ajax } from 'rxjs/observable/dom/ajax'
+import 'rxjs/add/operator/mergeMap'
+import 'rxjs/add/operator/map'
+import 'rxjs/add/operator/filter'
+import {
+  FETCH_ALL_FULFILLED,
+  campsiteFinderListSchema
+} from './campsiteFinders'
+import { normalize, schema } from 'normalizr'
 
-const SELET_DATE_OPTIION = 'campground-finder/campgrounds/SELET_DATE_OPTIION'
-const TOGGLE_WEEKENDS = 'campground-finder/campgrounds/TOGGLE_WEEKENDS'
-const TOGGLE_ACTIVE = 'campground-finder/campgrounds/TOGGLE_ACTIVE'
-const SET_DATES = 'campground-finder/campgrounds/SET_DATES'
-const SET_DATE_FOCUS = 'campground-finder/campgrounds/SET_DATE_FOCUS'
+export const campgroundSchema = new schema.Entity(
+  'campgrounds',
+  {},
+  { idAttribute: '_id' }
+)
 
-export const NEXT_SIX_MONTHS = 'campground-finder/campgrounds/NEXT_SIX_MONTHS'
-export const SPECIFIC_DATES = 'campground-finder/campgrounds/SPECIFIC_DATES'
-export const START_DATE = 'startDate'
-export const END_DATE = 'endDate'
+const campgroundListSchema = [campgroundSchema]
 
-const sampleIds = [1, 2]
-const sampleObjs = {
-  1: {
-    id: 1,
-    active: true,
-    title: 'Big Basin',
-    weekends: false,
-    dateOption: SPECIFIC_DATES,
-    startDate: moment(),
-    endDate: moment().add(4, 'months'),
-    focusedDate: null
-  },
-  2: {
-    id: 2,
-    active: false,
-    title: 'Steep Ravine',
-    weekends: true,
-    dateOption: NEXT_SIX_MONTHS,
-    focusedDate: null
-  }
-}
+// CONSTANTS
+const QUERY = 'campground-finder/campgrounds/QUERY'
+const QUERY_FULFILLED = 'campground-finder/campgrounds/QUERY_FULFILLED'
 
-function ids (state = sampleIds, action = {}) {
+// REDUCERS
+const attrs = [
+  '_id',
+  'facilityName',
+  'facilityId',
+  'facilityPhoto',
+  'latitude',
+  'longitude',
+  'regionName',
+  'shortName',
+  'state'
+]
+
+function queryIds (state = [], action = {}) {
   switch (action.type) {
+    case QUERY_FULFILLED: {
+      return action.campgrounds.map(campgrounds => campgrounds._id)
+    }
     default:
       return state
   }
 }
 
-function objs (state = sampleObjs, action = {}) {
-  const toggleVal = toggleObjectValue(action.id)
-  const updateObj = updateObjectValue(action.id)
-
+function ids (state = [], action = {}) {
   switch (action.type) {
-    case TOGGLE_WEEKENDS: {
-      return toggleVal('weekends', state)
+    case QUERY_FULFILLED: {
+      return [
+        ...state,
+        ...action.campgrounds.map(campgrounds => campgrounds._id)
+      ]
     }
-    case TOGGLE_ACTIVE: {
-      return toggleVal('active', state)
+    case FETCH_ALL_FULFILLED: {
+      const normalized = normalize(
+        action.campsiteFinders,
+        campsiteFinderListSchema
+      )
+      return keys(path(['entities', 'campgrounds'], normalized)) || state
     }
-    case SELET_DATE_OPTIION: {
-      return updateObj('dateOption', action.dateOption, state)
+    default:
+      return state
+  }
+}
+
+function objs (state = {}, action = {}) {
+  switch (action.type) {
+    case QUERY_FULFILLED: {
+      const normalized = normalize(
+        compose(map(setToCapitalize('facilityName')), project(attrs))(
+          action.campgrounds
+        ),
+        campgroundListSchema
+      )
+      const campgrounds = path(['entities', 'campgrounds'], normalized)
+      return { ...state, ...campgrounds }
     }
-    case SET_DATES: {
-      return compose(
-        updateObj('startDate', action.startDate),
-        updateObj('endDate', action.endDate)
-      )(state)
-    }
-    case SET_DATE_FOCUS: {
-      return updateObj('focusedDate', action.focusedDate, state)
+    case FETCH_ALL_FULFILLED: {
+      const normalized = normalize(
+        action.campsiteFinders,
+        campsiteFinderListSchema
+      )
+      return path(['entities', 'campgrounds'], normalized) || state
     }
     default:
       return state
@@ -73,54 +96,68 @@ function objs (state = sampleObjs, action = {}) {
 }
 
 export default combineReducers({
+  queryIds,
   ids,
   objs
 })
 
-export function selectDateOption (id, dateOption) {
+// ACTION CREATORS
+export function queryCampgrounds (query) {
   return {
-    type: SELET_DATE_OPTIION,
-    id,
-    dateOption
+    type: QUERY,
+    query
   }
 }
 
-export function toggleWeekends (id) {
+function queryFulfilled (campgrounds) {
   return {
-    type: TOGGLE_WEEKENDS,
-    id
+    type: QUERY_FULFILLED,
+    campgrounds
   }
 }
 
-export function toggleActive (id) {
-  return {
-    type: TOGGLE_ACTIVE,
-    id
-  }
-}
-
-export function setDates (id, startDate, endDate) {
-  return {
-    type: SET_DATES,
-    id,
-    startDate,
-    endDate
-  }
-}
-
-export function setDateFocus (id, focusedDate) {
-  return {
-    type: SET_DATE_FOCUS,
-    id,
-    focusedDate
-  }
-}
-
+// SELECTORS
 const campgroundObjsSelector = state => state.campgrounds.objs
 const campgroundIdsSelector = state => state.campgrounds.ids
+const fiveCampgrounds = state => take(5, state.campgrounds.queryIds)
+const keysMap = {
+  facilityId: 'key',
+  facilityName: 'text',
+  _id: 'value',
+  state: 'description'
+}
+
+const keysFilter = ['key', 'text', 'value', 'description']
+
+const mapToOptions = objs =>
+  objs.map(compose(pick(keysFilter), renameKeys(keysMap)))
 
 export const campgroundsSelector = createSelector(
   campgroundObjsSelector,
   campgroundIdsSelector,
-  (objs, ids) => ids.map(id => objs[id])
+  mapObjsToIds
 )
+
+export const campgroundResultsSelector = createSelector(
+  campgroundObjsSelector,
+  fiveCampgrounds,
+  mapObjsToIds
+)
+
+export const campgroundOptionsSelector = createSelector(
+  campgroundResultsSelector,
+  mapToOptions
+)
+
+// EPICS
+const base = 'http://localhost:8080'
+
+export const queryCampgroundsEpic = action$ =>
+  action$
+    .ofType(QUERY)
+    .filter(action => action.query && action.query.length > 3)
+    .mergeMap(action =>
+      ajax
+        .getJSON(`${base}/campgrounds?q=${action.query}`)
+        .map(response => queryFulfilled(response))
+    )

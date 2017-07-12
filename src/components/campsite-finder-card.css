@@ -1,0 +1,41 @@
+.ui.card>.content>.header, .ui.cards>.card>.content>.header.campsite-finder-card__header {
+  display: flex;
+  align-items: center;
+}
+
+.campsite-finder-card__on-off {
+  font-size: 12px;
+  margin-left: auto;
+}
+
+.campsite-finder-card__label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.campsite-finder-card__label-text {
+  color: #999;
+  margin-right: 10px;
+}
+
+.campsite-finder-card__sub-heading {
+  margin-bottom: 0.5em;
+}
+
+.campsite-finder-card .DateInput__display-text {
+  font-size: 12px;
+}
+
+.campsite-finder-card .DateRangePickerInput {
+  display: flex;
+  align-items: center;
+}
+
+.campsite-finder-card .DateInput {
+  width: auto;
+}
+
+.campsite-finder-card__form {
+  margin-bottom: 12px;
+}

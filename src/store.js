@@ -1,13 +1,16 @@
 import { createStore, applyMiddleware, compose } from 'redux'
 import { routerMiddleware } from 'react-router-redux'
 import createHistory from 'history/createBrowserHistory'
-import { rootReducer } from './modules/root'
+import { createEpicMiddleware } from 'redux-observable'
+import { rootReducer, rootEpic } from './modules/root'
+
+const epicMiddleware = createEpicMiddleware(rootEpic)
 
 export const history = createHistory()
 
 const initialState = {}
 const enhancers = []
-const middleware = [routerMiddleware(history)]
+const middleware = [routerMiddleware(history), epicMiddleware]
 
 if (process.env.NODE_ENV === 'development') {
   const devToolsExtension = window.devToolsExtension

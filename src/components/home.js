@@ -1,13 +1,15 @@
 import React from 'react'
 import './home.css'
-import CampgroundsCollectionContainer from '../containers/campgrounds-collection-container'
+import CampsiteFindersCollectionContainer from '../containers/campsite-finders-collection-container'
+import CampgroundSearchContainer from '../containers/campground-search-container'
 import { Container } from 'semantic-ui-react'
 
 const Home = () => {
   return (
     <section className='home'>
       <Container>
-        <CampgroundsCollectionContainer />
+        <CampgroundSearchContainer />
+        <CampsiteFindersCollectionContainer />
       </Container>
     </section>
   )
