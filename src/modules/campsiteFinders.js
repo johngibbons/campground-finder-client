@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
 import { createSelector } from 'reselect'
 import { updateObjectValue } from '../helpers/reducerHelpers'
-import { compose, path, pick } from 'ramda'
+import { path, pick } from 'ramda'
 import { ajax } from 'rxjs/observable/dom/ajax'
 import 'rxjs/add/operator/mergeMap'
 import 'rxjs/add/operator/map'
@@ -26,7 +26,7 @@ export const CREATE_FULFILLED =
 const UPDATE = 'campground-finder/campsite-finders/UPDATE'
 export const UPDATE_FULFILLED =
   'campground-finder/campsite-finders/UPDATE_FULFILLED'
-const SET_DATES = 'campground-finder/campsite-finders/SET_DATES'
+const SET_EMAIL_VALUE = 'campground-finder/campsite-finders/SET_EMAIL_VALUE'
 const SET_DATE_FOCUS = 'campground-finder/campsite-finders/SET_DATE_FOCUS'
 
 export const NEXT_SIX_MONTHS = 'NEXT_SIX_MONTHS'
@@ -39,6 +39,8 @@ const attrs = [
   'campgroundId',
   'isActive',
   'isWeekendsOnly',
+  'isSendingEmails',
+  'emailAddresses',
   'dateOption',
   'startDate',
   'endDate'
@@ -76,14 +78,11 @@ function objs (state = {}, action = {}) {
         [action.campsiteFinder._id]: pick(attrs, action.campsiteFinder)
       }
     }
-    case SET_DATES: {
-      return compose(
-        updateObj('startDate', action.startDate),
-        updateObj('endDate', action.endDate)
-      )(state)
-    }
     case SET_DATE_FOCUS: {
       return updateObj('focusedDate', action.focusedDate, state)
+    }
+    case SET_EMAIL_VALUE: {
+      return updateObj('emailValue', action.value, state)
     }
     default:
       return state
@@ -97,20 +96,19 @@ export default combineReducers({
 
 // ACTION CREATORS
 
-export function setDates (id, startDate, endDate) {
-  return {
-    type: SET_DATES,
-    id,
-    startDate,
-    endDate
-  }
-}
-
 export function setDateFocus (id, focusedDate) {
   return {
     type: SET_DATE_FOCUS,
     id,
     focusedDate
+  }
+}
+
+export function setEmailValue (id, value) {
+  return {
+    type: SET_EMAIL_VALUE,
+    id,
+    value
   }
 }
 
@@ -142,7 +140,6 @@ function fetchAllFulfilled (campsiteFinders) {
 }
 
 export function updateCampsiteFinder (id, params) {
-  console.log(params)
   return {
     type: UPDATE,
     id,
@@ -151,7 +148,6 @@ export function updateCampsiteFinder (id, params) {
 }
 
 function updateCampsiteFinderFulfilled (campsiteFinder) {
-  console.log(campsiteFinder)
   return {
     type: UPDATE_FULFILLED,
     campsiteFinder

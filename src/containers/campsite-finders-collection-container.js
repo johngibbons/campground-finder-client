@@ -19,8 +19,6 @@ class CampsiteFindersCollectionContainer extends Component {
 }
 
 const mapStateToProps = state => {
-  console.log(state)
-  console.log('selected:', campsiteFindersSelector(state))
   return {
     campsiteFinders: campsiteFindersSelector(state)
   }

@@ -14,13 +14,16 @@ const CampsiteFinderCard = ({
     campgroundId,
     isActive,
     isWeekendsOnly,
+    isSendingEmails,
+    emailAddresses,
+    emailValue,
     dateOption,
     startDate,
     endDate,
     focusedDate
   },
   handleUpdateCampsiteFinder,
-  handleSetDates,
+  handleSetEmailValue,
   handleDateFocusChange
 }) => {
   return (
@@ -97,6 +100,41 @@ const CampsiteFinderCard = ({
             showClearDates
             reopenPickerOnClearDates
           />}
+        <Card.Meta className='campsite-finder-card__sub-heading'>
+          Notification Settings
+        </Card.Meta>
+        <Form
+          onSubmit={() => {
+            handleUpdateCampsiteFinder(_id, {
+              emailAddresses: JSON.stringify([...emailAddresses, emailValue])
+            })
+            handleSetEmailValue(_id, '')
+          }}
+        >
+          <Form.Field>
+            <Checkbox
+              label='Send emails'
+              checked={isSendingEmails}
+              onChange={() =>
+                handleUpdateCampsiteFinder(_id, {
+                  isSendingEmails: !isSendingEmails
+                })}
+            />
+          </Form.Field>
+          {isSendingEmails &&
+            <Form.Input
+              placeholder='Enter email...'
+              value={emailValue || ''}
+              onChange={(e, { value }) => handleSetEmailValue(_id, value)}
+            />}
+        </Form>
+        {emailAddresses.map((emailAddress, i) => {
+          return (
+            <div key={i}>
+              {emailAddress}
+            </div>
+          )
+        })}
       </Card.Content>
     </Card>
   )

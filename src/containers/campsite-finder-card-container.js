@@ -1,13 +1,13 @@
 import { connect } from 'react-redux'
 import {
   updateCampsiteFinder,
-  setDates,
+  setEmailValue,
   setDateFocus
 } from '../modules/campsiteFinders'
 import CampsiteFinderCard from '../components/campsite-finder-card.js'
 
 export default connect(null, {
   handleUpdateCampsiteFinder: updateCampsiteFinder,
-  handleSetDates: setDates,
+  handleSetEmailValue: setEmailValue,
   handleDateFocusChange: setDateFocus
 })(CampsiteFinderCard)
