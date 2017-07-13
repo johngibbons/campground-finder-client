@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "moment": "^2.18.1",
+    "netlify-cli": "^1.2.2",
     "normalizr": "^3.2.3",
     "ramda": "^0.24.1",
     "react": "^15.6.1",

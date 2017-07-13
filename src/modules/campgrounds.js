@@ -150,7 +150,7 @@ export const campgroundOptionsSelector = createSelector(
 )
 
 // EPICS
-const base = 'http://localhost:8080'
+const base = process.env.REACT_APP_HOST
 
 export const queryCampgroundsEpic = action$ =>
   action$
