@@ -47,3 +47,10 @@
 .campsite-finder-card .DateRangePicker__picker {
   z-index: 3;
 }
+
+.ui.selection.relaxed.list .item.campsite-finder-card__email:hover {
+  color: rgb(100%, 40%, 40%);
+  text-decoration: line-through;
+  cursor: pointer;
+  background-color: transparent;
+}

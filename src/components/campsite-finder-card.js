@@ -1,10 +1,10 @@
 import React from 'react'
 import './campsite-finder-card.css'
-import { Card, Checkbox, Form, Radio } from 'semantic-ui-react'
+import { Card, Checkbox, Form, Radio, List } from 'semantic-ui-react'
 import 'react-dates/lib/css/_datepicker.css'
 import { DateRangePicker } from 'react-dates'
 import { NEXT_SIX_MONTHS, SPECIFIC_DATES } from '../modules/campsiteFinders'
-import { both, map } from 'ramda'
+import { both, map, without } from 'ramda'
 import { captializeTitle } from '../helpers/reducerHelpers'
 import moment from 'moment'
 
@@ -50,7 +50,7 @@ const CampsiteFinderCard = ({
           <Form.Field>
             <Checkbox
               label='Weekends only'
-              checked={isWeekendsOnly}
+              checked={dateOption === NEXT_SIX_MONTHS || isWeekendsOnly}
               onChange={() =>
                 handleUpdateCampsiteFinder(_id, {
                   isWeekendsOnly: !isWeekendsOnly
@@ -122,19 +122,32 @@ const CampsiteFinderCard = ({
             />
           </Form.Field>
           {isSendingEmails &&
+            !!emailAddresses.length &&
+            <List relaxed selection>
+              {emailAddresses.map((emailAddress, i) => {
+                return (
+                  <List.Item
+                    key={i}
+                    className='campsite-finder-card__email'
+                    onClick={(e, { children }) =>
+                      handleUpdateCampsiteFinder(_id, {
+                        emailAddresses: JSON.stringify(
+                          without(children, emailAddresses)
+                        )
+                      })}
+                  >
+                    {emailAddress}
+                  </List.Item>
+                )
+              })}
+            </List>}
+          {isSendingEmails &&
             <Form.Input
-              placeholder='Enter email...'
+              placeholder='Enter emails...'
               value={emailValue || ''}
               onChange={(e, { value }) => handleSetEmailValue(_id, value)}
             />}
         </Form>
-        {emailAddresses.map((emailAddress, i) => {
-          return (
-            <div key={i}>
-              {emailAddress}
-            </div>
-          )
-        })}
       </Card.Content>
     </Card>
   )

@@ -167,7 +167,7 @@ export const campsiteFindersSelector = createSelector(
     return denormalize(cfIds, campsiteFinderListSchema, {
       campgrounds: cgObjs,
       campsiteFinders: cfObjs
-    })
+    }).reverse()
   }
 )
 
