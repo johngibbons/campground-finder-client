@@ -1,10 +1,11 @@
 import { combineReducers } from 'redux'
 import { createSelector } from 'reselect'
-import { updateObjectValue } from '../helpers/reducerHelpers'
-import { path, pick } from 'ramda'
+import { updateObjectValue, toggleObjectValue } from '../helpers/reducerHelpers'
+import { path, pick, without, omit } from 'ramda'
 import { ajax } from 'rxjs/observable/dom/ajax'
 import 'rxjs/add/operator/mergeMap'
 import 'rxjs/add/operator/map'
+import 'rxjs/add/operator/catch'
 import { normalize, denormalize, schema } from 'normalizr'
 import { campgroundSchema } from './campgrounds'
 
@@ -21,6 +22,8 @@ const FETCH_ALL = 'campground-finder/campsite-finders/FETCH_ALL'
 export const FETCH_ALL_FULFILLED =
   'campground-finder/campsite-finders/FETCH_ALL_FULFILLED'
 const CREATE = 'campground-finder/campsite-finders/CREATE'
+const DELETE = 'campground-finder/campsite-finders/DELETE'
+const DELETE_FULFILLED = 'campground-finder/campsite-finders/DELETE_FULFILLED'
 export const CREATE_FULFILLED =
   'campground-finder/campsite-finders/CREATE_FULFILLED'
 const UPDATE = 'campground-finder/campsite-finders/UPDATE'
@@ -28,6 +31,8 @@ export const UPDATE_FULFILLED =
   'campground-finder/campsite-finders/UPDATE_FULFILLED'
 const SET_EMAIL_VALUE = 'campground-finder/campsite-finders/SET_EMAIL_VALUE'
 const SET_DATE_FOCUS = 'campground-finder/campsite-finders/SET_DATE_FOCUS'
+const TOGGLE_CONFIRM_MODAL =
+  'campground-finder/campsite-finders/TOGGLE_CONFIRM_MODAL'
 
 export const NEXT_SIX_MONTHS = 'NEXT_SIX_MONTHS'
 export const SPECIFIC_DATES = 'SPECIFIC_DATES'
@@ -54,6 +59,9 @@ function ids (state = [], action = {}) {
     case FETCH_ALL_FULFILLED: {
       return action.campsiteFinders.map(campsiteFinder => campsiteFinder._id)
     }
+    case DELETE_FULFILLED: {
+      return without(action.id, state)
+    }
     default:
       return state
   }
@@ -61,6 +69,7 @@ function ids (state = [], action = {}) {
 
 function objs (state = {}, action = {}) {
   const updateObj = updateObjectValue(action.id)
+  const toggleObj = toggleObjectValue(action.id)
 
   switch (action.type) {
     case FETCH_ALL_FULFILLED: {
@@ -78,11 +87,17 @@ function objs (state = {}, action = {}) {
         [action.campsiteFinder._id]: pick(attrs, action.campsiteFinder)
       }
     }
+    case DELETE_FULFILLED: {
+      return omit(action.id, state)
+    }
     case SET_DATE_FOCUS: {
       return updateObj('focusedDate', action.focusedDate, state)
     }
     case SET_EMAIL_VALUE: {
       return updateObj('emailValue', action.value, state)
+    }
+    case TOGGLE_CONFIRM_MODAL: {
+      return toggleObj('isConfirmOpen', state)
     }
     default:
       return state
@@ -120,6 +135,13 @@ export function setEmailValue (id, value) {
     type: SET_EMAIL_VALUE,
     id,
     value
+  }
+}
+
+export function toggleConfirmModal (id) {
+  return {
+    type: TOGGLE_CONFIRM_MODAL,
+    id
   }
 }
 
@@ -165,6 +187,20 @@ function updateCampsiteFinderFulfilled (campsiteFinder) {
   }
 }
 
+export function deleteCampsiteFinder (id) {
+  return {
+    type: DELETE,
+    id
+  }
+}
+
+function deleteCampsiteFinderFulfilled (id) {
+  return {
+    type: DELETE_FULFILLED,
+    id
+  }
+}
+
 // SELECTORS
 const campsiteFinderObjsSelector = state => state.campsiteFinders.objs
 const campsiteFinderIdsSelector = state => state.campsiteFinders.ids
@@ -194,6 +230,7 @@ export const fetchAllCampsiteFindersEpic = action$ =>
       ajax
         .getJSON(`${base}/campsite-finders`)
         .map(response => fetchAllFulfilled(response))
+        .catch(err => console.log(err))
     )
 
 export const createCampsiteFinderEpic = action$ =>
@@ -203,7 +240,9 @@ export const createCampsiteFinderEpic = action$ =>
       body: action.params,
       method: 'POST',
       responseType: 'json'
-    }).map(response => createCampsiteFinderFulfilled(response.response))
+    })
+      .map(response => createCampsiteFinderFulfilled(response.response))
+      .catch(err => console.log(err))
   )
 
 export const updateCampsiteFinderEpic = action$ =>
@@ -213,5 +252,18 @@ export const updateCampsiteFinderEpic = action$ =>
       body: action.params,
       method: 'PUT',
       responseType: 'json'
-    }).map(response => updateCampsiteFinderFulfilled(response.response))
+    })
+      .map(response => updateCampsiteFinderFulfilled(response.response))
+      .catch(err => console.log(err))
+  )
+
+export const deleteCampsiteFinderEpic = action$ =>
+  action$.ofType(DELETE).mergeMap(action =>
+    ajax({
+      url: `${base}/campsite-finders/${action.id}`,
+      method: 'DELETE',
+      responseType: 'json'
+    })
+      .map(() => deleteCampsiteFinderFulfilled(action.id))
+      .catch(err => console.log(err))
   )

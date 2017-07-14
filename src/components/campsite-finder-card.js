@@ -1,6 +1,16 @@
 import React from 'react'
 import './campsite-finder-card.css'
-import { Card, Checkbox, Form, Radio, List, Image } from 'semantic-ui-react'
+import {
+  Card,
+  Checkbox,
+  Form,
+  Radio,
+  List,
+  Image,
+  Icon,
+  Dropdown,
+  Confirm
+} from 'semantic-ui-react'
 import 'react-dates/lib/css/_datepicker.css'
 import { DateRangePicker } from 'react-dates'
 import { NEXT_SIX_MONTHS, SPECIFIC_DATES } from '../modules/campsiteFinders'
@@ -24,28 +34,41 @@ const CampsiteFinderCard = ({
     dateOption,
     startDate,
     endDate,
-    focusedDate
+    focusedDate,
+    isConfirmOpen
   },
   handleUpdateCampsiteFinder,
+  handleDeleteCampsiteFinder,
   handleSetEmailValue,
-  handleDateFocusChange
+  handleDateFocusChange,
+  handleToggleConfirm
 }) => {
   return (
-    <Card className='campsite-finder-card'>
+    <Card className='campsite-finder-card' color={isActive ? '' : 'yellow'}>
       <Card.Content extra>
         <Card.Header className='campsite-finder-card__header'>
           {captializeTitle(campgroundId.facilityName)}
           <div className='campsite-finder-card__on-off'>
-            <label className='campsite-finder-card__label'>
-              <span className='campsite-finder-card__label-text'>on/off</span>
-              <Checkbox
-                className='campsite-finder-card__toggle'
-                checked={isActive}
-                onChange={() =>
-                  handleUpdateCampsiteFinder(_id, { isActive: !isActive })}
-                toggle
-              />
-            </label>
+            <Dropdown icon={isActive ? 'pause' : 'play'}>
+              <Dropdown.Menu>
+                <Dropdown.Item
+                  onClick={() =>
+                    handleUpdateCampsiteFinder(_id, { isActive: !isActive })}
+                >
+                  <Icon name={isActive ? 'pause' : 'play'} fitted />
+                  {isActive ? 'Pause' : 'Resume'}
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => handleToggleConfirm(_id)}>
+                  <Icon name='delete' />
+                  Delete
+                </Dropdown.Item>
+                <Confirm
+                  open={isConfirmOpen}
+                  onConfirm={() => handleDeleteCampsiteFinder(_id)}
+                  onCancel={() => handleToggleConfirm(_id)}
+                />
+              </Dropdown.Menu>
+            </Dropdown>
           </div>
         </Card.Header>
       </Card.Content>
