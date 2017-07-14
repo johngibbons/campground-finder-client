@@ -23,6 +23,7 @@ const CampgroundSearch = ({
         fluid
         search
         selection
+        selectOnBlur={false}
         icon='search'
       />
     </div>

@@ -1,3 +1,7 @@
 .campground-search {
   margin-bottom: 25px;
 }
+
+.campground-search .ui.search.dropdown>.text {
+  z-index: 1;
+}
