@@ -11,7 +11,7 @@ class App extends Component {
         <header className='app__header'>
           <Container>
             <Link className='app__header-logo' to='/'>
-              Campground Finder
+              Campsite Finder
             </Link>
           </Container>
         </header>

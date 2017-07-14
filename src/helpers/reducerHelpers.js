@@ -14,7 +14,11 @@ import {
   tail,
   over,
   lens,
-  prop
+  prop,
+  concat,
+  take,
+  splitAt,
+  last
 } from 'ramda'
 
 export const updateObjectValue = curry((id, attr, value, state) => {
@@ -56,3 +60,15 @@ export const captializeTitle = compose(
 
 export const setToCapitalize = attr =>
   over(lens(prop(attr), assoc(attr)), captializeTitle)
+
+export const takeEmailDomain = compose(concat('@'), last, split('@'))
+export const takeEmailAddress = compose(head, split('@'))
+const makeSecret = map(() => '*')
+const firstTwo = take(2)
+export const secretAfterTwo = compose(join(''), makeSecret, last, splitAt(2))
+export const obfuscatedWord = str => concat(firstTwo(str), secretAfterTwo(str))
+export const secretEmail = email =>
+  concat(
+    compose(obfuscatedWord, takeEmailAddress)(email),
+    takeEmailDomain(email)
+  )

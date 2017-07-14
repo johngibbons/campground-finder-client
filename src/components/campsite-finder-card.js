@@ -4,9 +4,10 @@ import { Card, Checkbox, Form, Radio, List } from 'semantic-ui-react'
 import 'react-dates/lib/css/_datepicker.css'
 import { DateRangePicker } from 'react-dates'
 import { NEXT_SIX_MONTHS, SPECIFIC_DATES } from '../modules/campsiteFinders'
-import { both, map, without } from 'ramda'
+import { both, map, remove } from 'ramda'
 import { captializeTitle } from '../helpers/reducerHelpers'
 import moment from 'moment'
+import { secretEmail } from '../helpers/reducerHelpers'
 
 const CampsiteFinderCard = ({
   campsiteFinder: {
@@ -132,11 +133,11 @@ const CampsiteFinderCard = ({
                     onClick={(e, { children }) =>
                       handleUpdateCampsiteFinder(_id, {
                         emailAddresses: JSON.stringify(
-                          without(children, emailAddresses)
+                          remove(i, 1, emailAddresses)
                         )
                       })}
                   >
-                    {emailAddress}
+                    {secretEmail(emailAddress)}
                   </List.Item>
                 )
               })}
