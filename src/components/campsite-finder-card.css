@@ -39,9 +39,18 @@
 .campsite-finder-card__image-wrapper {
   display: flex;
   align-items: center;
-  height: 150px;
+  justify-content: center;
+  height: 175px;
   overflow: hidden;
   background-color: rgb(95%, 95%, 95%)
+}
+
+.campsite-finder-card__title-link {
+  width: 100%;
+}
+
+.campsite-finder-card__title-link img {
+  width: 100%;
 }
 
 .campsite-finder-card__form {

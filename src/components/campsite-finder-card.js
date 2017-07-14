@@ -44,7 +44,10 @@ const CampsiteFinderCard = ({
   handleToggleConfirm
 }) => {
   return (
-    <Card className='campsite-finder-card' color={isActive ? '' : 'yellow'}>
+    <Card
+      className='campsite-finder-card'
+      color={isActive ? 'green' : 'yellow'}
+    >
       <Card.Content extra>
         <Card.Header className='campsite-finder-card__header'>
           {captializeTitle(campgroundId.facilityName)}
@@ -73,7 +76,11 @@ const CampsiteFinderCard = ({
         </Card.Header>
       </Card.Content>
       <div className='campsite-finder-card__image-wrapper'>
-        <a className='campsite-finder-card__title-link' href={campgroundId.url}>
+        <a
+          className='campsite-finder-card__title-link'
+          href={campgroundId.url}
+          target='blank'
+        >
           <Image
             className='campsite-finder-card__campground-image'
             src={replaceImages(
