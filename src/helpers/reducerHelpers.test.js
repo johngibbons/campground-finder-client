@@ -5,7 +5,8 @@ import {
   takeEmailAddress,
   secretAfterTwo,
   obfuscatedWord,
-  secretEmail
+  secretEmail,
+  replaceImages
 } from './reducerHelpers'
 
 test('gets domain portion of email address', () => {
@@ -31,4 +32,10 @@ test('hide after first three letters of email', () => {
   expect(secretEmail('john@gmail.com')).toBe('jo**@gmail.com')
   expect(secretEmail('johnny@yahoo.com')).toBe('jo****@yahoo.com')
   expect(secretEmail('jo@jo.com')).toBe('jo@jo.com')
+})
+
+test('replace image dimensions', () => {
+  expect(replaceImages('/something/else/80x53.jpeg')).toBe(
+    '/something/else/540x360.jpeg'
+  )
 })

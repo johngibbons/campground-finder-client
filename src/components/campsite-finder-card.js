@@ -5,9 +5,12 @@ import 'react-dates/lib/css/_datepicker.css'
 import { DateRangePicker } from 'react-dates'
 import { NEXT_SIX_MONTHS, SPECIFIC_DATES } from '../modules/campsiteFinders'
 import { both, map, remove } from 'ramda'
-import { captializeTitle } from '../helpers/reducerHelpers'
+import {
+  captializeTitle,
+  secretEmail,
+  replaceImages
+} from '../helpers/reducerHelpers'
 import moment from 'moment'
-import { secretEmail } from '../helpers/reducerHelpers'
 
 const CampsiteFinderCard = ({
   campsiteFinder: {
@@ -31,7 +34,12 @@ const CampsiteFinderCard = ({
     <Card className='campsite-finder-card'>
       <Card.Content extra>
         <Card.Header className='campsite-finder-card__header'>
-          {captializeTitle(campgroundId.facilityName)}
+          <a
+            className='campsite-finder-card__title-link'
+            href={campgroundId.url}
+          >
+            {captializeTitle(campgroundId.facilityName)}
+          </a>
           <div className='campsite-finder-card__on-off'>
             <label className='campsite-finder-card__label'>
               <span className='campsite-finder-card__label-text'>on/off</span>
@@ -47,6 +55,12 @@ const CampsiteFinderCard = ({
         </Card.Header>
       </Card.Content>
       <Card.Content>
+        <img
+          className='campsite-finder-card__campground-image'
+          src={replaceImages(
+            `http://reserveamerica.com${campgroundId.facilityPhoto}`
+          )}
+        />
         <Form className='campsite-finder-card__form'>
           <Form.Field>
             <Checkbox

@@ -18,7 +18,8 @@ import {
   concat,
   take,
   splitAt,
-  last
+  last,
+  replace
 } from 'ramda'
 
 export const updateObjectValue = curry((id, attr, value, state) => {
@@ -72,3 +73,5 @@ export const secretEmail = email =>
     compose(obfuscatedWord, takeEmailAddress)(email),
     takeEmailDomain(email)
   )
+
+export const replaceImages = replace(/80x53/, '540x360')

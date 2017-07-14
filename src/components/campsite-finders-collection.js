@@ -1,10 +1,13 @@
 import React from 'react'
 import CampsiteFinderCardContainer from '../containers/campsite-finder-card-container'
-import { Card } from 'semantic-ui-react'
+import { Dimmer, Loader, Card } from 'semantic-ui-react'
 
-const CampsiteFindersCollection = ({ campsiteFinders }) => {
+const CampsiteFindersCollection = ({ campsiteFinders, isLoaded }) => {
   return (
     <Card.Group itemsPerRow={3} stackable>
+      <Dimmer active={!isLoaded} page inverted>
+        <Loader inverted active={!isLoaded} disabled={isLoaded} />
+      </Dimmer>
       {campsiteFinders.map((campsiteFinder, i) =>
         <CampsiteFinderCardContainer key={i} campsiteFinder={campsiteFinder} />
       )}

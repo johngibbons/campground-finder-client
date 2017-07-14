@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import {
   campsiteFindersSelector,
-  fetchAllCampsiteFinders
+  fetchAllCampsiteFinders,
+  isFindersCollectionLoadedSelector
 } from '../modules/campsiteFinders'
 import CampsiteFindersCollection from '../components/campsite-finders-collection'
 
@@ -12,15 +13,14 @@ class CampsiteFindersCollectionContainer extends Component {
   }
 
   render () {
-    return (
-      <CampsiteFindersCollection campsiteFinders={this.props.campsiteFinders} />
-    )
+    return <CampsiteFindersCollection {...this.props} />
   }
 }
 
 const mapStateToProps = state => {
   return {
-    campsiteFinders: campsiteFindersSelector(state)
+    campsiteFinders: campsiteFindersSelector(state),
+    isLoaded: isFindersCollectionLoadedSelector(state)
   }
 }
 

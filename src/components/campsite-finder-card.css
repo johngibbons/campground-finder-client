@@ -54,3 +54,10 @@
   cursor: pointer;
   background-color: transparent;
 }
+
+.campsite-finder-card__campground-image {
+  max-width: 100%
+}
+.campsite-finder-card__title-link {
+  color: rgb(80%, 80%, 80%)
+}

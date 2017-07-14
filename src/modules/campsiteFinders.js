@@ -89,9 +89,20 @@ function objs (state = {}, action = {}) {
   }
 }
 
+function ui (state = { isLoaded: false }, action = {}) {
+  switch (action.type) {
+    case FETCH_ALL_FULFILLED: {
+      return { ...state, isLoaded: true }
+    }
+    default:
+      return state
+  }
+}
+
 export default combineReducers({
   ids,
-  objs
+  objs,
+  ui
 })
 
 // ACTION CREATORS
@@ -158,6 +169,8 @@ function updateCampsiteFinderFulfilled (campsiteFinder) {
 const campsiteFinderObjsSelector = state => state.campsiteFinders.objs
 const campsiteFinderIdsSelector = state => state.campsiteFinders.ids
 const campgroundObjsSelector = state => state.campgrounds.objs
+export const isFindersCollectionLoadedSelector = state =>
+  state.campsiteFinders.ui.isLoaded
 
 export const campsiteFindersSelector = createSelector(
   campsiteFinderObjsSelector,
