@@ -36,6 +36,14 @@
   width: auto;
 }
 
+.campsite-finder-card__image-wrapper {
+  display: flex;
+  align-items: center;
+  height: 150px;
+  overflow: hidden;
+  background-color: rgb(95%, 95%, 95%)
+}
+
 .campsite-finder-card__form {
   margin-bottom: 12px;
 }

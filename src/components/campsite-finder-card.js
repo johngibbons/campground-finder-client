@@ -1,6 +1,6 @@
 import React from 'react'
 import './campsite-finder-card.css'
-import { Card, Checkbox, Form, Radio, List } from 'semantic-ui-react'
+import { Card, Checkbox, Form, Radio, List, Image } from 'semantic-ui-react'
 import 'react-dates/lib/css/_datepicker.css'
 import { DateRangePicker } from 'react-dates'
 import { NEXT_SIX_MONTHS, SPECIFIC_DATES } from '../modules/campsiteFinders'
@@ -34,12 +34,7 @@ const CampsiteFinderCard = ({
     <Card className='campsite-finder-card'>
       <Card.Content extra>
         <Card.Header className='campsite-finder-card__header'>
-          <a
-            className='campsite-finder-card__title-link'
-            href={campgroundId.url}
-          >
-            {captializeTitle(campgroundId.facilityName)}
-          </a>
+          {captializeTitle(campgroundId.facilityName)}
           <div className='campsite-finder-card__on-off'>
             <label className='campsite-finder-card__label'>
               <span className='campsite-finder-card__label-text'>on/off</span>
@@ -54,13 +49,17 @@ const CampsiteFinderCard = ({
           </div>
         </Card.Header>
       </Card.Content>
+      <div className='campsite-finder-card__image-wrapper'>
+        <a className='campsite-finder-card__title-link' href={campgroundId.url}>
+          <Image
+            className='campsite-finder-card__campground-image'
+            src={replaceImages(
+              `http://reserveamerica.com${campgroundId.facilityPhoto}`
+            )}
+          />
+        </a>
+      </div>
       <Card.Content>
-        <img
-          className='campsite-finder-card__campground-image'
-          src={replaceImages(
-            `http://reserveamerica.com${campgroundId.facilityPhoto}`
-          )}
-        />
         <Form className='campsite-finder-card__form'>
           <Form.Field>
             <Checkbox
