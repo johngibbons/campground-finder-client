@@ -33,6 +33,8 @@ const SET_EMAIL_VALUE = 'campground-finder/campsite-finders/SET_EMAIL_VALUE'
 const SET_DATE_FOCUS = 'campground-finder/campsite-finders/SET_DATE_FOCUS'
 const TOGGLE_CONFIRM_MODAL =
   'campground-finder/campsite-finders/TOGGLE_CONFIRM_MODAL'
+const TOGGLE_SHOW_ALL_RESULTS =
+  'campground-finder/campsite-finders/TOGGLE_SHOW_ALL_RESULTS'
 
 export const NEXT_SIX_MONTHS = 'NEXT_SIX_MONTHS'
 export const SPECIFIC_DATES = 'SPECIFIC_DATES'
@@ -46,6 +48,7 @@ const attrs = [
   'isWeekendsOnly',
   'isSendingEmails',
   'emailAddresses',
+  'datesAvailable',
   'dateOption',
   'startDate',
   'endDate'
@@ -99,6 +102,9 @@ function objs (state = {}, action = {}) {
     case TOGGLE_CONFIRM_MODAL: {
       return toggleObj('isConfirmOpen', state)
     }
+    case TOGGLE_SHOW_ALL_RESULTS: {
+      return toggleObj('isShowingAllResults', state)
+    }
     default:
       return state
   }
@@ -141,6 +147,13 @@ export function setEmailValue (id, value) {
 export function toggleConfirmModal (id) {
   return {
     type: TOGGLE_CONFIRM_MODAL,
+    id
+  }
+}
+
+export function toggleShowAllResults (id) {
+  return {
+    type: TOGGLE_SHOW_ALL_RESULTS,
     id
   }
 }

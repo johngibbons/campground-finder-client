@@ -1,5 +1,6 @@
 import React from 'react'
 import './campsite-finder-card.css'
+import ResultsTable from './results-table'
 import {
   Card,
   Checkbox,
@@ -32,21 +33,25 @@ const CampsiteFinderCard = ({
     emailAddresses,
     emailValue,
     dateOption,
+    datesAvailable,
     startDate,
     endDate,
     focusedDate,
-    isConfirmOpen
+    isConfirmOpen,
+    isShowingAllResults
   },
   handleUpdateCampsiteFinder,
   handleDeleteCampsiteFinder,
   handleSetEmailValue,
   handleDateFocusChange,
-  handleToggleConfirm
+  handleToggleConfirm,
+  handleToggleShowAllResults
 }) => {
+  const hasAvailableSites = datesAvailable.length > 0
   return (
     <Card
       className='campsite-finder-card'
-      color={isActive ? 'green' : 'yellow'}
+      color={hasAvailableSites ? 'green' : isActive ? 'red' : 'yellow'}
     >
       <Card.Content extra>
         <Card.Header className='campsite-finder-card__header'>
@@ -89,7 +94,10 @@ const CampsiteFinderCard = ({
           />
         </a>
       </div>
-      <Card.Content>
+      <Card.Content className='campsite-finder-card__settings'>
+        <Card.Meta className='campsite-finder-card__sub-heading'>
+          Settings
+        </Card.Meta>
         <Form className='campsite-finder-card__form'>
           <Form.Field>
             <Checkbox
@@ -141,6 +149,9 @@ const CampsiteFinderCard = ({
             onFocusChange={focusedDate =>
               handleDateFocusChange(_id, focusedDate)}
             numberOfMonths={1}
+            isOutsideRange={date => {
+              return moment(date).diff(moment(), 'days') < 1
+            }}
             showClearDates
             reopenPickerOnClearDates
           />}
@@ -165,6 +176,14 @@ const CampsiteFinderCard = ({
                 })}
             />
           </Form.Field>
+          {isSendingEmails &&
+            <Form.Field>
+              <Radio label='Daily' />
+            </Form.Field>}
+          {isSendingEmails &&
+            <Form.Field>
+              <Radio label='Immediate' />
+            </Form.Field>}
           {isSendingEmails &&
             !!emailAddresses.length &&
             <List relaxed selection>
@@ -192,6 +211,18 @@ const CampsiteFinderCard = ({
               onChange={(e, { value }) => handleSetEmailValue(_id, value)}
             />}
         </Form>
+      </Card.Content>
+      <Card.Content>
+        <Card.Meta className='campsite-finder-card__sub-heading'>
+          Results
+        </Card.Meta>
+        {datesAvailable.length > 0
+          ? <ResultsTable
+            results={datesAvailable}
+            isShowingAll={isShowingAllResults}
+            handleToggleShowAll={() => handleToggleShowAllResults(_id)}
+          />
+          : <div>No spots available</div>}
       </Card.Content>
     </Card>
   )

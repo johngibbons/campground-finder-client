@@ -4,7 +4,8 @@ import {
   deleteCampsiteFinder,
   setEmailValue,
   setDateFocus,
-  toggleConfirmModal
+  toggleConfirmModal,
+  toggleShowAllResults
 } from '../modules/campsiteFinders'
 import CampsiteFinderCard from '../components/campsite-finder-card.js'
 
@@ -13,5 +14,6 @@ export default connect(null, {
   handleDeleteCampsiteFinder: deleteCampsiteFinder,
   handleSetEmailValue: setEmailValue,
   handleDateFocusChange: setDateFocus,
-  handleToggleConfirm: toggleConfirmModal
+  handleToggleConfirm: toggleConfirmModal,
+  handleToggleShowAllResults: toggleShowAllResults
 })(CampsiteFinderCard)

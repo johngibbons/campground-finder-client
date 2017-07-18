@@ -1,3 +1,15 @@
+.home .ui .ui.cards .campsite-finder-card {
+  box-shadow: none;
+}
+
+.home .ui .ui.cards .campsite-finder-card:hover {
+  box-shadow: none;
+}
+
+.home .ui .ui.cards .campsite-finder-card .extra {
+  border-top: none !important;
+}
+
 .ui.card>.content>.header, .ui.cards>.card>.content>.header.campsite-finder-card__header {
   display: flex;
   align-items: center;
@@ -17,6 +29,10 @@
 .campsite-finder-card__label-text {
   color: #999;
   margin-right: 10px;
+}
+
+.campsite-finder-card__settings {
+  flex: 0;
 }
 
 .campsite-finder-card__sub-heading {
