@@ -216,7 +216,11 @@ const CampsiteFinderCard = ({
       <Card.Content>
         <Card.Meta className='campsite-finder-card__sub-heading'>
           Results
-          <div className='campsite-finder-card__sub-sub-heading'>Updated {moment(lastCheckedAt).fromNow()}</div>
+          <div className='campsite-finder-card__sub-sub-heading'>
+            {lastCheckedAt
+              ? `Updated ${moment(lastCheckedAt).fromNow()}`
+              : `Not checked yet`}
+          </div>
         </Card.Meta>
         {datesAvailable.length > 0
           ? <ResultsTable
