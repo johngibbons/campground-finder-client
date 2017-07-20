@@ -10,15 +10,22 @@ const ResultsTable = ({ results, isShowingAll, handleToggleShowAll }) => {
       <Table.Header>
         <Table.Row>
           <Table.HeaderCell>Date</Table.HeaderCell>
+          <Table.HeaderCell textAlign='center'>Nights</Table.HeaderCell>
           <Table.HeaderCell textAlign='right'>Spots Available</Table.HeaderCell>
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {take(numShowing, results).map(({ date, siteCount }, i) => {
+        {take(
+          numShowing,
+          results
+        ).map(({ date, siteCount, lengthOfStay }, i) => {
           return (
             <Table.Row key={i}>
               <Table.Cell>
                 {date}
+              </Table.Cell>
+              <Table.Cell textAlign='center'>
+                {lengthOfStay}
               </Table.Cell>
               <Table.Cell textAlign='right'>
                 {siteCount}
@@ -29,7 +36,7 @@ const ResultsTable = ({ results, isShowingAll, handleToggleShowAll }) => {
         {results.length > 3 &&
           <Table.Row>
             <Table.Cell
-              colSpan='2'
+              colSpan='3'
               className='results-table__show-hide'
               onClick={handleToggleShowAll}
             >
