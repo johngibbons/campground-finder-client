@@ -1,7 +1,16 @@
 import { combineReducers } from 'redux'
 import { createSelector } from 'reselect'
 import { updateObjectValue, toggleObjectValue } from '../helpers/reducerHelpers'
-import { path, pick, without, omit } from 'ramda'
+import {
+  path,
+  pick,
+  without,
+  omit,
+  sortBy,
+  prop,
+  reverse,
+  compose
+} from 'ramda'
 import { ajax } from 'rxjs/observable/dom/ajax'
 import 'rxjs/add/operator/mergeMap'
 import 'rxjs/add/operator/map'
@@ -221,16 +230,19 @@ const campsiteFinderIdsSelector = state => state.campsiteFinders.ids
 const campgroundObjsSelector = state => state.campgrounds.objs
 export const isFindersCollectionLoadedSelector = state =>
   state.campsiteFinders.ui.isLoaded
+const sortByCreatedAt = compose(reverse, sortBy(prop('createdAt')))
 
 export const campsiteFindersSelector = createSelector(
   campsiteFinderObjsSelector,
   campsiteFinderIdsSelector,
   campgroundObjsSelector,
   (cfObjs, cfIds, cgObjs) => {
-    return denormalize(cfIds, campsiteFinderListSchema, {
-      campgrounds: cgObjs,
-      campsiteFinders: cfObjs
-    }).reverse()
+    return sortByCreatedAt(
+      denormalize(cfIds, campsiteFinderListSchema, {
+        campgrounds: cgObjs,
+        campsiteFinders: cfObjs
+      })
+    )
   }
 )
 
