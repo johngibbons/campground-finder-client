@@ -35,8 +35,8 @@
   float: right;
 }
 
-.campsite-finder-card__settings {
-  flex: 0;
+.ui.cards .card .content.campsite-finder-card__settings {
+  flex: 0 0 auto;
 }
 
 .campsite-finder-card__sub-heading {
@@ -84,10 +84,6 @@
 
 .campsite-finder-card__title-link img {
   width: 100%;
-}
-
-.campsite-finder-card__form {
-  margin-bottom: 12px;
 }
 
 .campsite-finder-card .DateRangePicker {

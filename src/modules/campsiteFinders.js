@@ -56,6 +56,8 @@ const TOGGLE_SHOW_ALL_RESULTS =
   'campground-finder/campsite-finders/TOGGLE_SHOW_ALL_RESULTS'
 const TOGGLE_SETTINGS_FORM_SHOWING =
   'campground-finder/campsite-finders/TOGGLE_SETTINGS_FORM_SHOWING'
+const CANCEL_EDIT_SETTINGS =
+  'campground-finder/campsite-finders/CANCEL_EDIT_SETTINGS'
 const TOGGLE_IS_WEEKENDS_ONLY =
   'campground-finder/campsite-finders/TOGGLE_IS_WEEKENDS_ONLY'
 const TOGGLE_IS_SENDING_EMAILS =
@@ -186,6 +188,10 @@ function objs (state = {}, action = {}) {
     case TOGGLE_SETTINGS_FORM_SHOWING: {
       return toggleObj('isSettingsShowing', state)
     }
+    case CANCEL_EDIT_SETTINGS: {
+      const prevObj = state[action.id].cache
+      return { ...state, [action.id]: { ...prevObj, cache: prevObj } }
+    }
     case TOGGLE_SHOW_ALL_RESULTS: {
       return toggleObj('isShowingAllResults', state)
     }
@@ -277,6 +283,13 @@ export function removeEmailAddress (id, index) {
 export function toggleSettingsFormShowing (id) {
   return {
     type: TOGGLE_SETTINGS_FORM_SHOWING,
+    id
+  }
+}
+
+export function cancelEditSettings (id) {
+  return {
+    type: CANCEL_EDIT_SETTINGS,
     id
   }
 }

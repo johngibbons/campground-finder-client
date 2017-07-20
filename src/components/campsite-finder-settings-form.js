@@ -29,7 +29,7 @@ const CampsiteFinderSettingsForm = ({
 }) => {
   return (
     <div>
-      <Form className='campsite-finder-card__form'>
+      <Form className='campsite-finder-settings-form'>
         <Card.Meta className='campsite-finder-card__sub-heading'>
           Dates
         </Card.Meta>

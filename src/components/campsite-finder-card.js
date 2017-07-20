@@ -20,14 +20,10 @@ const CampsiteFinderCard = ({
   campsiteFinder,
   handleUpdateCampsiteFinder,
   handleDeleteCampsiteFinder,
-  handleSetEmailValue,
-  handleSetSiteCodeValue,
-  handleSetDateOption,
-  handleDateFocusChange,
   handleToggleConfirm,
   handleToggleSettigsFormShowing,
   handleToggleShowAllResults,
-  handleToggleIsWeekendsOnly
+  handleCancelEditSettings
 }) => {
   const {
     _id,
@@ -92,35 +88,23 @@ const CampsiteFinderCard = ({
           />
         </a>
       </div>
-      <Card.Content>
-        <Card.Meta className='campsite-finder-card__sub-heading'>
-          Results
-          <div className='campsite-finder-card__sub-sub-heading'>
-            {lastCheckedAt
-              ? `Updated ${moment(lastCheckedAt).fromNow()}`
-              : `Not checked yet`}
-          </div>
-        </Card.Meta>
-        {datesAvailable.length > 0
-          ? <ResultsTable
-            results={datesAvailable}
-            isShowingAll={isShowingAllResults}
-            handleToggleShowAll={() => handleToggleShowAllResults(_id)}
-          />
-          : <div>No spots available</div>}
-      </Card.Content>
       <Card.Content className='campsite-finder-card__settings'>
         <Card.Meta className='campsite-finder-card__sub-heading'>
           Settings
           {isSettingsShowing
-            ? <Button
-              className='campsite-finder-card__edit-link'
-              onClick={() => handleUpdateCampsiteFinder(_id, campsiteFinder)}
-              primary
-              compact
-            >
-                Save
-            </Button>
+            ? <div className='campsite-finder-card__edit-link'>
+              <Button onClick={() => handleCancelEditSettings(_id)} compact>
+                  Cancel
+              </Button>
+              <Button
+                onClick={() =>
+                  handleUpdateCampsiteFinder(_id, campsiteFinder)}
+                primary
+                compact
+              >
+                  Save
+              </Button>
+            </div>
             : <a
               className='campsite-finder-card__edit-link'
               onClick={() => handleToggleSettigsFormShowing(_id)}
@@ -162,6 +146,23 @@ const CampsiteFinderCard = ({
               </span>
             </List.Item>
           </List>}
+      </Card.Content>
+      <Card.Content>
+        <Card.Meta className='campsite-finder-card__sub-heading'>
+          Results
+          <div className='campsite-finder-card__sub-sub-heading'>
+            {lastCheckedAt
+              ? `Updated ${moment(lastCheckedAt).fromNow()}`
+              : `Not checked yet`}
+          </div>
+        </Card.Meta>
+        {datesAvailable.length > 0
+          ? <ResultsTable
+            results={datesAvailable}
+            isShowingAll={isShowingAllResults}
+            handleToggleShowAll={() => handleToggleShowAllResults(_id)}
+          />
+          : <div>No spots available</div>}
       </Card.Content>
     </Card>
   )
