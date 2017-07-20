@@ -1,18 +1,18 @@
 import { combineReducers } from 'redux'
 import { createSelector } from 'reselect'
-import {
-  toggleObjectValue,
-  updateTempAttrValue
-} from '../helpers/reducerHelpers'
+import { toggleObjectValue, updateObjectValue } from '../helpers/reducerHelpers'
 import {
   path,
   pick,
+  pickBy,
   without,
   omit,
   sortBy,
   prop,
   reverse,
-  compose
+  compose,
+  remove,
+  map
 } from 'ramda'
 import { ajax } from 'rxjs/observable/dom/ajax'
 import 'rxjs/add/operator/mergeMap'
@@ -46,6 +46,10 @@ const SET_SITE_CODE_VALUE =
   'campground-finder/campsite-finders/SET_SITE_CODE_VALUE'
 const SET_DATE_FOCUS = 'campground-finder/campsite-finders/SET_DATE_FOCUS'
 const SET_DATE_OPTION = 'campground-finder/campsite-finders/SET_DATE_OPTION'
+const SET_DATES = 'campground-finder/campsite-finders/SET_DATES'
+const ADD_EMAIL_ADDRESS = 'campground-finder/campsite-finders/ADD_EMAIL_ADDRESS'
+const REMOVE_EMAIL_ADDRESS =
+  'campground-finder/campsite-finders/REMOVE_EMAIL_ADDRESS'
 const TOGGLE_CONFIRM_MODAL =
   'campground-finder/campsite-finders/TOGGLE_CONFIRM_MODAL'
 const TOGGLE_SHOW_ALL_RESULTS =
@@ -54,6 +58,8 @@ const TOGGLE_SETTINGS_FORM_SHOWING =
   'campground-finder/campsite-finders/TOGGLE_SETTINGS_FORM_SHOWING'
 const TOGGLE_IS_WEEKENDS_ONLY =
   'campground-finder/campsite-finders/TOGGLE_IS_WEEKENDS_ONLY'
+const TOGGLE_IS_SENDING_EMAILS =
+  'campground-finder/campsite-finders/TOGGLE_IS_SENDING_EMAILS'
 
 export const NEXT_SIX_MONTHS = 'NEXT_SIX_MONTHS'
 export const SPECIFIC_DATES = 'SPECIFIC_DATES'
@@ -75,6 +81,17 @@ const attrs = [
   'lastCheckedAt'
 ]
 
+const editableAttrs = [
+  'isActive',
+  'isWeekendsOnly',
+  'isSendingEmails',
+  'emailAddresses',
+  'dateOption',
+  'siteCode',
+  'startDate',
+  'endDate'
+]
+
 function ids (state = [], action = {}) {
   switch (action.type) {
     case CREATE_FULFILLED: {
@@ -93,7 +110,7 @@ function ids (state = [], action = {}) {
 
 function objs (state = {}, action = {}) {
   const toggleObj = toggleObjectValue(action.id)
-  const updateTempAttr = updateTempAttrValue(action.id)
+  const updateObj = updateObjectValue(action.id)
 
   switch (action.type) {
     case FETCH_ALL_FULFILLED: {
@@ -102,16 +119,19 @@ function objs (state = {}, action = {}) {
         campsiteFinderListSchema
       )
       const campsiteFinders = path(['entities', 'campsiteFinders'], normalized)
-      return campsiteFinders || state
+      if (!campsiteFinders) return state
+      return map(finder => ({ ...finder, cache: finder }), campsiteFinders)
     }
     case UPDATE_FULFILLED:
     case CREATE_FULFILLED: {
+      const newObj = pick(attrs, action.campsiteFinder)
       return {
         ...state,
         [action.campsiteFinder._id]: {
           ...state[action.campsiteFinder._id],
-          ...pick(attrs, action.campsiteFinder),
-          tempAttrs: {}
+          ...newObj,
+          isSettingsShowing: false,
+          cache: newObj
         }
       }
     }
@@ -119,16 +139,46 @@ function objs (state = {}, action = {}) {
       return omit(action.id, state)
     }
     case SET_DATE_FOCUS: {
-      return updateTempAttr('focusedDate', action.focusedDate, state)
+      return updateObj('focusedDate', action.focusedDate, state)
     }
     case SET_EMAIL_VALUE: {
-      return updateTempAttr('emailValue', action.value, state)
+      return updateObj('emailValue', action.value, state)
     }
     case SET_SITE_CODE_VALUE: {
-      return updateTempAttr('siteCode', action.value, state)
+      return updateObj('siteCode', action.value, state)
     }
     case SET_DATE_OPTION: {
-      return updateTempAttr('dateOption', action.value, state)
+      return updateObj('dateOption', action.value, state)
+    }
+    case SET_DATES: {
+      const updateDates = compose(
+        updateObj('startDate', action.datesObj.startDate),
+        updateObj('endDate', action.datesObj.endDate)
+      )
+      return updateDates(state)
+    }
+    case ADD_EMAIL_ADDRESS: {
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          emailAddresses: [...state[action.id].emailAddresses, action.value],
+          emailValue: ''
+        }
+      }
+    }
+    case REMOVE_EMAIL_ADDRESS: {
+      return {
+        ...state,
+        [action.id]: {
+          ...state[action.id],
+          emailAddresses: remove(
+            action.index,
+            1,
+            state[action.id].emailAddresses
+          )
+        }
+      }
     }
     case TOGGLE_CONFIRM_MODAL: {
       return toggleObj('isConfirmOpen', state)
@@ -141,6 +191,9 @@ function objs (state = {}, action = {}) {
     }
     case TOGGLE_IS_WEEKENDS_ONLY: {
       return toggleObj('isWeekendsOnly', state)
+    }
+    case TOGGLE_IS_SENDING_EMAILS: {
+      return toggleObj('isSendingEmails', state)
     }
     default:
       return state
@@ -197,6 +250,30 @@ export function setDateOption (id, value) {
   }
 }
 
+export function setDates (id, datesObj) {
+  return {
+    type: SET_DATES,
+    id,
+    datesObj
+  }
+}
+
+export function addEmailAddress (id, value) {
+  return {
+    type: ADD_EMAIL_ADDRESS,
+    id,
+    value
+  }
+}
+
+export function removeEmailAddress (id, index) {
+  return {
+    type: REMOVE_EMAIL_ADDRESS,
+    id,
+    index
+  }
+}
+
 export function toggleSettingsFormShowing (id) {
   return {
     type: TOGGLE_SETTINGS_FORM_SHOWING,
@@ -221,6 +298,13 @@ export function toggleShowAllResults (id) {
 export function toggleIsWeekendsOnly (id) {
   return {
     type: TOGGLE_IS_WEEKENDS_ONLY,
+    id
+  }
+}
+
+export function toggleIsSendingEmails (id) {
+  return {
+    type: TOGGLE_IS_SENDING_EMAILS,
     id
   }
 }
@@ -328,17 +412,26 @@ export const createCampsiteFinderEpic = action$ =>
       .catch(err => console.log(err))
   )
 
+const changedAttrs = obj =>
+  obj.cache
+    ? compose(
+      map(val => (Array.isArray(val) ? JSON.stringify(val) : val)),
+      pickBy((val, key) => val !== obj.cache[key]),
+      pick(editableAttrs)
+    )(obj)
+    : obj
+
 export const updateCampsiteFinderEpic = action$ =>
-  action$.ofType(UPDATE).mergeMap(action =>
-    ajax({
+  action$.ofType(UPDATE).mergeMap(action => {
+    return ajax({
       url: `${base}/campsite-finders/${action.id}`,
-      body: action.params,
+      body: changedAttrs(action.params),
       method: 'PUT',
       responseType: 'json'
     })
       .map(response => updateCampsiteFinderFulfilled(response.response))
       .catch(err => console.log(err))
-  )
+  })
 
 export const deleteCampsiteFinderEpic = action$ =>
   action$.ofType(DELETE).mergeMap(action =>
