@@ -51,7 +51,8 @@ const attrs = [
   'datesAvailable',
   'dateOption',
   'startDate',
-  'endDate'
+  'endDate',
+  'lastCheckedAt'
 ]
 
 function ids (state = [], action = {}) {

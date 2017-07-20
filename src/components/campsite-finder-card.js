@@ -38,7 +38,8 @@ const CampsiteFinderCard = ({
     endDate,
     focusedDate,
     isConfirmOpen,
-    isShowingAllResults
+    isShowingAllResults,
+    lastCheckedAt
   },
   handleUpdateCampsiteFinder,
   handleDeleteCampsiteFinder,
@@ -215,6 +216,7 @@ const CampsiteFinderCard = ({
       <Card.Content>
         <Card.Meta className='campsite-finder-card__sub-heading'>
           Results
+          <div className='campsite-finder-card__sub-sub-heading'>Updated {moment(lastCheckedAt).fromNow()}</div>
         </Card.Meta>
         {datesAvailable.length > 0
           ? <ResultsTable

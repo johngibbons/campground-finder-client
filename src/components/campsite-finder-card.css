@@ -39,6 +39,11 @@
   margin-bottom: 0.5em;
 }
 
+.campsite-finder-card__sub-sub-heading {
+  font-size: 0.8em;
+  color: rgba(0, 0, 0, 0.2);
+}
+
 .campsite-finder-card .DateInput__display-text {
   font-size: 12px;
 }
