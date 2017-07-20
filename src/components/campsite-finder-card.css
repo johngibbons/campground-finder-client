@@ -31,6 +31,10 @@
   margin-right: 10px;
 }
 
+.campsite-finder-card__edit-link {
+  float: right;
+}
+
 .campsite-finder-card__settings {
   flex: 0;
 }
@@ -55,6 +59,14 @@
 
 .campsite-finder-card .DateInput {
   width: auto;
+}
+
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
 }
 
 .campsite-finder-card__image-wrapper {

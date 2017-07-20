@@ -8,8 +8,11 @@ const CampsiteFindersCollection = ({ campsiteFinders, isLoaded }) => {
       <Dimmer active={!isLoaded} page inverted>
         <Loader inverted active={!isLoaded} disabled={isLoaded} />
       </Dimmer>
-      {campsiteFinders.map((campsiteFinder, i) =>
-        <CampsiteFinderCardContainer key={i} campsiteFinder={campsiteFinder} />
+      {campsiteFinders.map(campsiteFinder =>
+        <CampsiteFinderCardContainer
+          key={campsiteFinder._id}
+          campsiteFinder={campsiteFinder}
+        />
       )}
     </Card.Group>
   )
