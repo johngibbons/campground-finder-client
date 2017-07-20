@@ -19,7 +19,12 @@ import {
   take,
   splitAt,
   last,
-  replace
+  replace,
+  set,
+  lensPath,
+  path,
+  pathEq,
+  propEq
 } from 'ramda'
 
 export const updateObjectValue = curry((id, attr, value, state) => {
@@ -41,6 +46,17 @@ export const toggleObjectValue = curry((id, attr, state) => {
     }
   }
 })
+
+export const updateTempAttrValue = curry((id, attr, val, state) =>
+  set(lensPath([id, 'tempAttrs', attr]), val, state)
+)
+
+export const tempOrRealAttrIs = curry(
+  (obj, attr, val) =>
+    path(['tempAttrs', attr], obj)
+      ? pathEq(['tempAttrs', attr], val, obj)
+      : propEq(attr, val, obj)
+)
 
 export const mapObjsToIds = (objs, ids) => ids.map(id => objs[id])
 
