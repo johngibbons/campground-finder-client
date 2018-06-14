@@ -14,7 +14,9 @@ const CampgroundSearch = ({
     <div className="campground-search">
       <Dropdown
         placeholder="Search campgrounds..."
-        onSearchChange={(e, value) => handleQueryCampgrounds(value)}
+        onSearchChange={(e, { searchQuery }) =>
+          handleQueryCampgrounds(searchQuery)
+        }
         openOnFocus={false}
         options={options}
         minCharacters={4}
