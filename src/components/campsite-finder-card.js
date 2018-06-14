@@ -59,7 +59,7 @@ const CampsiteFinderCard = ({
                     handleUpdateCampsiteFinder(_id, { isActive: !isActive })
                   }
                 >
-                  <Icon name={isActive ? "pause" : "play"} fitted />
+                  <Icon name={isActive ? "pause" : "play"} />
                   {isActive ? "Pause" : "Resume"}
                 </Dropdown.Item>
                 <Dropdown.Item onClick={() => handleToggleConfirm(_id)}>
