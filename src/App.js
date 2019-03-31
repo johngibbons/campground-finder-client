@@ -16,9 +16,11 @@ class App extends Component {
             </Link>
           </Container>
         </header>
-        <main>
-          <Route exact path="/" component={Home} />
-          <Route path="/signup" component={SignUp} />
+        <main className="app__main">
+          <Container>
+            <Route exact path="/" component={Home} />
+            <Route path="/signup" component={SignUp} />
+          </Container>
         </main>
       </div>
     );

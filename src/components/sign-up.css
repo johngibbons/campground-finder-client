@@ -1,5 +1,4 @@
-.sign-up {
+.sign-up__form-container {
+  width: 450px;
   margin: 0 auto;
-  max-width: 500px;
-  padding-top: 50px;
 }
