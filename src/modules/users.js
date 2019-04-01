@@ -1,5 +1,4 @@
 import { combineReducers } from "redux";
-import { ajax } from "rxjs/observable/dom/ajax";
 
 const UPDATE_FIELD = "users/UPDATE_FIELD";
 const BLUR_FIELD = "users/BLUR_FIELD";
@@ -57,13 +56,6 @@ export function blurField(fieldName) {
   };
 }
 
-export function createUser(user) {
-  return {
-    type: CREATE_USER,
-    user
-  };
-}
-
 function createUserFulfilled(user) {
   return {
     type: CREATE_USER_FULFILLED,
@@ -78,20 +70,26 @@ function createUserFailed(error) {
   };
 }
 
-// EPICS
+// THUNKS
 const base = process.env.REACT_APP_HOST;
 
-export const createUserEpic = action$ =>
-  action$.ofType(CREATE_USER).mergeMap(action =>
-    ajax({
-      url: `${base}/users`,
-      body: action.user,
-      method: "POST",
-      responseType: "json"
-    })
-      .map(({ response }) => createUserFulfilled(response))
-      .catch(err => {
-        console.log(err);
-        createUserFailed(err);
-      })
-  );
+export function createUser(user) {
+  return async dispatch => {
+    try {
+      const response = await fetch(`${base}/register`, {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(user)
+      });
+
+      const user = await response.json();
+
+      return dispatch(createUserFulfilled(user));
+    } catch (err) {
+      console.log(err);
+      return dispatch(createUserFailed(err));
+    }
+  };
+}

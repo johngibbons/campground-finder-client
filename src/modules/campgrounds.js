@@ -6,10 +6,6 @@ import {
   setToCapitalize
 } from "../helpers/reducerHelpers";
 import { take, compose, pick, map, path, keys, project } from "ramda";
-import { ajax } from "rxjs/observable/dom/ajax";
-import "rxjs/add/operator/mergeMap";
-import "rxjs/add/operator/map";
-import "rxjs/add/operator/filter";
 import {
   FETCH_ALL_FULFILLED,
   campsiteFinderListSchema
@@ -103,14 +99,6 @@ export default combineReducers({
   objs
 });
 
-// ACTION CREATORS
-export function queryCampgrounds(query) {
-  return {
-    type: QUERY,
-    query
-  };
-}
-
 function queryFulfilled(campgrounds) {
   return {
     type: QUERY_FULFILLED,
@@ -138,17 +126,16 @@ const rcaKeysMap = {
 const keysFilter = ["key", "text", "value", "description"];
 
 const mapToOptions = objs => {
-  return objs.map(
-    obj =>
-      obj.facilityName
-        ? compose(
-            pick(keysFilter),
-            renameKeys(rcaKeysMap)
-          )(obj)
-        : compose(
-            pick(keysFilter),
-            renameKeys(raKeysMap)
-          )(obj)
+  return objs.map(obj =>
+    obj.facilityName
+      ? compose(
+          pick(keysFilter),
+          renameKeys(rcaKeysMap)
+        )(obj)
+      : compose(
+          pick(keysFilter),
+          renameKeys(raKeysMap)
+        )(obj)
   );
 };
 
@@ -169,15 +156,17 @@ export const campgroundOptionsSelector = createSelector(
   mapToOptions
 );
 
-// EPICS
+// THUNKS
 const base = process.env.REACT_APP_HOST;
 
-export const queryCampgroundsEpic = action$ =>
-  action$
-    .ofType(QUERY)
-    .filter(action => action.query && action.query.length > 3)
-    .mergeMap(action =>
-      ajax
-        .getJSON(`${base}/campgrounds?q=${action.query}`)
-        .map(response => queryFulfilled(response))
-    );
+export function queryCampgrounds(query) {
+  return async dispatch => {
+    if (query.length < 3) {
+      return;
+    }
+    const response = await fetch(`${base}/campgrounds?q=${query}`);
+    const campgrounds = await response.json();
+
+    return dispatch(queryFulfilled(campgrounds));
+  };
+}

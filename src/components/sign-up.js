@@ -23,7 +23,15 @@ const SignUp = ({
     <section className="sign-up">
       <div className="sign-up__form-container">
         <Header as="h1">Sign Up</Header>
-        <Form onSubmit={() => handleCreateUser({ email, password })}>
+        <Form
+          onSubmit={() =>
+            handleCreateUser({
+              email: email.value,
+              password: password.value,
+              passwordConfirm: passwordConfirm.value
+            })
+          }
+        >
           <Form.Input
             id="sign-up-email"
             label="Email Address"
@@ -39,7 +47,7 @@ const SignUp = ({
             required
             error={password.isDirty && password.value.length < 8}
           >
-            <label for="sign-up-password">Password</label>
+            <label htmlFor="sign-up-password">Password</label>
             <input
               id="sign-up-password"
               type="password"
@@ -48,7 +56,7 @@ const SignUp = ({
               }
               onBlur={() => handleBlurField(SIGN_UP_PASSWORD)}
               value={password.value}
-              aria-describedBy="sign-up-password-rules"
+              aria-describedby="sign-up-password-rules"
             />
             <div id="sign-up-password-rules" className="text-color--gray">
               Password must be at least 8 characters

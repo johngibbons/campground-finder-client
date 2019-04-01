@@ -17,10 +17,6 @@ import {
   remove,
   map
 } from "ramda";
-import { ajax } from "rxjs/observable/dom/ajax";
-import "rxjs/add/operator/mergeMap";
-import "rxjs/add/operator/map";
-import "rxjs/add/operator/catch";
 import { normalize, denormalize, schema } from "normalizr";
 import { campgroundSchema } from "./campgrounds";
 
@@ -326,23 +322,10 @@ export function toggleIsSendingEmails(id) {
   };
 }
 
-export function createCampsiteFinder(params) {
-  return {
-    type: CREATE,
-    params
-  };
-}
-
 export function createCampsiteFinderFulfilled(campsiteFinder) {
   return {
     type: CREATE_FULFILLED,
     campsiteFinder
-  };
-}
-
-export function fetchAllCampsiteFinders() {
-  return {
-    type: FETCH_ALL
   };
 }
 
@@ -353,25 +336,10 @@ function fetchAllFulfilled(campsiteFinders) {
   };
 }
 
-export function updateCampsiteFinder(id, params) {
-  return {
-    type: UPDATE,
-    id,
-    params
-  };
-}
-
 function updateCampsiteFinderFulfilled(campsiteFinder) {
   return {
     type: UPDATE_FULFILLED,
     campsiteFinder
-  };
-}
-
-export function deleteCampsiteFinder(id) {
-  return {
-    type: DELETE,
-    id
   };
 }
 
@@ -407,28 +375,40 @@ export const campsiteFindersSelector = createSelector(
   }
 );
 
-// EPICS
+// THUNKS
 const base = process.env.REACT_APP_HOST;
 
-export const fetchAllCampsiteFindersEpic = action$ =>
-  action$.ofType(FETCH_ALL).mergeMap(action =>
-    ajax
-      .getJSON(`${base}/campsite-finders`)
-      .map(response => fetchAllFulfilled(response))
-      .catch(err => console.log(err))
-  );
+export function fetchAllCampsiteFinders() {
+  return async dispatch => {
+    try {
+      const response = await fetch(`${base}/campsite-finders`);
+      const campsiteFinders = await response.json();
 
-export const createCampsiteFinderEpic = action$ =>
-  action$.ofType(CREATE).mergeMap(action =>
-    ajax({
-      url: `${base}/campsite-finders`,
-      body: action.params,
-      method: "POST",
-      responseType: "json"
-    })
-      .map(({ response }) => createCampsiteFinderFulfilled(response))
-      .catch(err => console.log(err))
-  );
+      return dispatch(fetchAllFulfilled(campsiteFinders));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+}
+
+export function createCampsiteFinder(params) {
+  return async dispatch => {
+    try {
+      const response = await fetch(`${base}/campsite-finders`, {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(params)
+      });
+      const campsiteFinder = await response.json();
+
+      return dispatch(createCampsiteFinderFulfilled(campsiteFinder));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+}
 
 const changedAttrs = obj =>
   obj.cache
@@ -439,25 +419,35 @@ const changedAttrs = obj =>
       )(obj)
     : obj;
 
-export const updateCampsiteFinderEpic = action$ =>
-  action$.ofType(UPDATE).mergeMap(action => {
-    return ajax({
-      url: `${base}/campsite-finders/${action.id}`,
-      body: changedAttrs(action.params),
-      method: "PUT",
-      responseType: "json"
-    })
-      .map(({ response }) => updateCampsiteFinderFulfilled(response))
-      .catch(err => console.log(err));
-  });
+export function updateCampsiteFinder(id, params) {
+  return async dispatch => {
+    try {
+      const response = await fetch(`${base}/campsite-finders/${id}`, {
+        method: "put",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: changedAttrs(JSON.stringify(params))
+      });
+      const campsiteFinder = await response.json();
 
-export const deleteCampsiteFinderEpic = action$ =>
-  action$.ofType(DELETE).mergeMap(action =>
-    ajax({
-      url: `${base}/campsite-finders/${action.id}`,
-      method: "DELETE",
-      responseType: "json"
-    })
-      .map(() => deleteCampsiteFinderFulfilled(action.id))
-      .catch(err => console.log(err))
-  );
+      return dispatch(updateCampsiteFinderFulfilled(campsiteFinder));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+}
+
+export function deleteCampsiteFinder(id) {
+  return async dispatch => {
+    try {
+      const response = await fetch(`${base}/campsite-finders/${id}`, {
+        method: "delete"
+      });
+
+      return dispatch(deleteCampsiteFinderFulfilled(id));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+}
