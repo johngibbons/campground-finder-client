@@ -4,8 +4,8 @@ import { Form, Header, Message } from "semantic-ui-react";
 import "./sign-up.css";
 import {
   createUser,
-  updateField,
-  blurField,
+  updateSignupField,
+  blurSignupField,
   SIGN_UP_EMAIL,
   SIGN_UP_PASSWORD,
   SIGN_UP_PASSWORD_CONFIRM
@@ -101,7 +101,7 @@ export default connect(
   mapStateToProps,
   {
     handleCreateUser: createUser,
-    handleBlurField: blurField,
-    handleUpdateField: updateField
+    handleBlurField: blurSignupField,
+    handleUpdateField: updateSignupField
   }
 )(SignUp);

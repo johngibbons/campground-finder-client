@@ -3,6 +3,7 @@ import { Route, Link } from "react-router-dom";
 import { Container } from "semantic-ui-react";
 import Home from "./components/home";
 import SignUp from "./components/sign-up";
+import Login from "./components/login";
 import "./App.css";
 
 class App extends Component {
@@ -20,6 +21,7 @@ class App extends Component {
           <Container>
             <Route exact path="/" component={Home} />
             <Route path="/signup" component={SignUp} />
+            <Route path="/login" component={Login} />
           </Container>
         </main>
       </div>
