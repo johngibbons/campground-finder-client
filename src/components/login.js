@@ -54,9 +54,6 @@ const Login = ({
               value={password.value}
               aria-describedby="login-password-rules"
             />
-            <div id="login-password-rules" className="text-color--gray">
-              Password must be at least 8 characters
-            </div>
           </Form.Field>
           <Form.Button>Log in</Form.Button>
           <Message

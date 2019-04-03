@@ -71,7 +71,7 @@ function login(state = loginInitialState, action = {}) {
       };
     }
     case LOG_IN_USER_FULFILLED: {
-      return signUpInitialState;
+      return loginInitialState;
     }
     case SET_LOGIN_FORM_ERRORS: {
       return { ...state, formErrors: action.messages };
