@@ -29,15 +29,11 @@ const campsiteFinderSchema = new schema.Entity(
 );
 export const campsiteFinderListSchema = [campsiteFinderSchema];
 
-const FETCH_ALL = "campground-finder/campsite-finders/FETCH_ALL";
 export const FETCH_ALL_FULFILLED =
   "campground-finder/campsite-finders/FETCH_ALL_FULFILLED";
-const CREATE = "campground-finder/campsite-finders/CREATE";
-const DELETE = "campground-finder/campsite-finders/DELETE";
 const DELETE_FULFILLED = "campground-finder/campsite-finders/DELETE_FULFILLED";
 export const CREATE_FULFILLED =
   "campground-finder/campsite-finders/CREATE_FULFILLED";
-const UPDATE = "campground-finder/campsite-finders/UPDATE";
 export const UPDATE_FULFILLED =
   "campground-finder/campsite-finders/UPDATE_FULFILLED";
 const SET_EMAIL_VALUE = "campground-finder/campsite-finders/SET_EMAIL_VALUE";
@@ -441,7 +437,7 @@ export function updateCampsiteFinder(id, params) {
 export function deleteCampsiteFinder(id) {
   return async dispatch => {
     try {
-      const response = await fetch(`${base}/campsite-finders/${id}`, {
+      await fetch(`${base}/campsite-finders/${id}`, {
         method: "delete"
       });
 

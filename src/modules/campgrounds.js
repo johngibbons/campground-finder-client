@@ -21,7 +21,6 @@ export const campgroundSchema = new schema.Entity(
 const campgroundListSchema = [campgroundSchema];
 
 // CONSTANTS
-const QUERY = "campground-finder/campgrounds/QUERY";
 const QUERY_FULFILLED = "campground-finder/campgrounds/QUERY_FULFILLED";
 
 // REDUCERS

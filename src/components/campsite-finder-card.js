@@ -106,12 +106,12 @@ const CampsiteFinderCard = ({
               </Button>
             </div>
           ) : (
-            <a
+            <button
               className="campsite-finder-card__edit-link"
               onClick={() => handleToggleSettigsFormShowing(_id)}
             >
               Edit
-            </a>
+            </button>
           )}
         </Card.Meta>
         {isSettingsShowing ? (

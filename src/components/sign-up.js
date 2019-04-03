@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Form, Header } from "semantic-ui-react";
+import { Form, Header, Message } from "semantic-ui-react";
 import "./sign-up.css";
 import {
   createUser,
@@ -13,6 +13,7 @@ import {
 
 const SignUp = ({
   email,
+  formErrors,
   password,
   passwordConfirm,
   handleBlurField,
@@ -75,6 +76,12 @@ const SignUp = ({
             required
           />
           <Form.Button>Sign up</Form.Button>
+          <Message
+            error
+            header="There was some errors with your submission"
+            list={formErrors}
+            visible={formErrors.length > 0}
+          />
         </Form>
       </div>
     </section>
@@ -83,9 +90,10 @@ const SignUp = ({
 
 const mapStateToProps = state => {
   return {
-    email: state.users[SIGN_UP_EMAIL],
-    password: state.users[SIGN_UP_PASSWORD],
-    passwordConfirm: state.users[SIGN_UP_PASSWORD_CONFIRM]
+    email: state.users.signUp[SIGN_UP_EMAIL],
+    password: state.users.signUp[SIGN_UP_PASSWORD],
+    passwordConfirm: state.users.signUp[SIGN_UP_PASSWORD_CONFIRM],
+    formErrors: state.users.signUp.formErrors
   };
 };
 
