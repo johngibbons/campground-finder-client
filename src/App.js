@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Route, Link } from "react-router-dom";
 import { Container } from "semantic-ui-react";
+import MainNavigationBar from "./components/main-navigation-bar";
 import Home from "./components/home";
 import SignUp from "./components/sign-up";
 import Login from "./components/login";
@@ -11,11 +12,7 @@ class App extends Component {
     return (
       <div className="app">
         <header className="app__header">
-          <Container>
-            <Link className="app__header-logo" to="/">
-              Campsite Finder
-            </Link>
-          </Container>
+          <MainNavigationBar />
         </header>
         <main className="app__main">
           <Container>
