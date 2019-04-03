@@ -1,6 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Form, Header, Message } from "semantic-ui-react";
+import { Link } from "react-router-dom";
 import "./sign-up.css";
 import {
   createUser,
@@ -63,18 +64,25 @@ const SignUp = ({
               Password must be at least 8 characters
             </div>
           </Form.Field>
-          <Form.Input
-            id="sign-up-password-confirm"
-            label="Confirm Password"
-            onChange={(e, { value }) =>
-              handleUpdateField(SIGN_UP_PASSWORD_CONFIRM, value)
-            }
-            onBlur={() => handleBlurField(SIGN_UP_PASSWORD_CONFIRM)}
-            type="password"
-            value={passwordConfirm.value}
-            error={passwordConfirm.isDirty && passwordConfirm.value.length < 8}
+          <Form.Field
             required
-          />
+            error={passwordConfirm.isDirty && passwordConfirm.value.length < 8}
+          >
+            <label htmlFor="sign-up-password-confirm">Confirm Password</label>
+            <input
+              id="sign-up-password-confirm"
+              type="password"
+              onChange={(e, { value }) =>
+                handleUpdateField(SIGN_UP_PASSWORD_CONFIRM, value)
+              }
+              onBlur={() => handleBlurField(SIGN_UP_PASSWORD_CONFIRM)}
+              value={passwordConfirm.value}
+              aria-describedby="sign-up-password-rules"
+            />
+            <div className="text-color--gray">
+              Already a member? Log in <Link to="/login">here</Link>
+            </div>
+          </Form.Field>
           <Form.Button>Sign up</Form.Button>
           <Message
             error

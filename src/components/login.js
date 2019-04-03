@@ -1,6 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Form, Header, Message } from "semantic-ui-react";
+import { Link } from "react-router-dom";
 import "./login.css";
 import {
   logInUser,
@@ -52,8 +53,10 @@ const Login = ({
               onChange={e => handleUpdateField(LOGIN_PASSWORD, e.target.value)}
               onBlur={() => handleBlurField(LOGIN_PASSWORD)}
               value={password.value}
-              aria-describedby="login-password-rules"
             />
+            <div className="text-color--gray">
+              Not a member yet? Sign up <Link to="/signup">here</Link>
+            </div>
           </Form.Field>
           <Form.Button>Log in</Form.Button>
           <Message
