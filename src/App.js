@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import { Route, Link } from "react-router-dom";
+import { Route, withRouter } from "react-router-dom";
 import { Container } from "semantic-ui-react";
+import { connect } from "react-redux";
 import MainNavigationBar from "./components/main-navigation-bar";
 import Home from "./components/home";
 import SignUp from "./components/sign-up";
@@ -12,7 +13,10 @@ class App extends Component {
     return (
       <div className="app">
         <header className="app__header">
-          <MainNavigationBar />
+          <MainNavigationBar
+            currentUser={this.props.currentUser}
+            history={this.props.history}
+          />
         </header>
         <main className="app__main">
           <Container>
@@ -26,4 +30,8 @@ class App extends Component {
   }
 }
 
-export default App;
+const mapStateToProps = state => {
+  return { currentUser: state.users.currentUser };
+};
+
+export default withRouter(connect(mapStateToProps)(App));

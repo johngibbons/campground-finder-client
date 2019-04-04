@@ -11,7 +11,7 @@ import "./semantic/dist/semantic.min.css";
 ReactDOM.render(
   <Provider store={store}>
     <ConnectedRouter history={history}>
-      <App />
+      <App history={history} />
     </ConnectedRouter>
   </Provider>,
   document.getElementById("root")

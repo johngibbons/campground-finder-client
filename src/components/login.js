@@ -15,6 +15,7 @@ const Login = ({
   email,
   formErrors,
   password,
+  history,
   handleBlurField,
   handleUpdateField,
   handleLogInUser
@@ -25,10 +26,13 @@ const Login = ({
         <Header as="h1">Log In</Header>
         <Form
           onSubmit={() =>
-            handleLogInUser({
-              email: email.value,
-              password: password.value
-            })
+            handleLogInUser(
+              {
+                email: email.value,
+                password: password.value
+              },
+              history
+            )
           }
         >
           <Form.Input

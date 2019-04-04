@@ -17,6 +17,7 @@ const SignUp = ({
   formErrors,
   password,
   passwordConfirm,
+  history,
   handleBlurField,
   handleUpdateField,
   handleCreateUser
@@ -27,11 +28,14 @@ const SignUp = ({
         <Header as="h1">Sign Up</Header>
         <Form
           onSubmit={() =>
-            handleCreateUser({
-              email: email.value,
-              password: password.value,
-              passwordConfirm: passwordConfirm.value
-            })
+            handleCreateUser(
+              {
+                email: email.value,
+                password: password.value,
+                passwordConfirm: passwordConfirm.value
+              },
+              history
+            )
           }
         >
           <Form.Input

@@ -9,7 +9,10 @@ const BLUR_LOGIN_FIELD = "users/BLUR_LOGIN_FIELD";
 const LOG_IN_USER_FULFILLED = "users/LOG_IN_USER_FULFILLED";
 const LOG_IN_USER_FAILED = "users/LOG_IN_USER_FAILED";
 const SET_LOGIN_FORM_ERRORS = "users/SET_LOGIN_FORM_ERRORS";
-const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+const LOG_OUT_USER = "users/LOG_OUT_USER";
+const currentUserKey = "campquest:currentUser";
+const authTokenKey = "campquest:auth";
+const EMAIL_REGEX = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 export const SIGN_UP_EMAIL = "SIGN_UP_EMAIL";
 export const SIGN_UP_PASSWORD = "SIGN_UP_PASSWORD";
@@ -82,7 +85,28 @@ function login(state = loginInitialState, action = {}) {
   }
 }
 
+const loggedInUserFromLocalStorage = JSON.parse(
+  localStorage.getItem(currentUserKey)
+);
+const currentUserInitialState = loggedInUserFromLocalStorage || {};
+
+function currentUser(state = currentUserInitialState, action = {}) {
+  switch (action.type) {
+    case CREATE_USER_FULFILLED:
+    case LOG_IN_USER_FULFILLED: {
+      return action.user;
+    }
+    case LOG_OUT_USER: {
+      return {};
+    }
+    default: {
+      return state;
+    }
+  }
+}
+
 export default combineReducers({
+  currentUser,
   signUp,
   login
 });
@@ -161,6 +185,16 @@ function setLoginFormErrors(formErrors, messages) {
   };
 }
 
+function setCurrentUserInLocalStorage(user, token) {
+  localStorage.setItem(currentUserKey, JSON.stringify(user));
+  localStorage.setItem(authTokenKey, token);
+}
+
+function removeUserFromLocalStorage() {
+  localStorage.removeItem(currentUserKey);
+  localStorage.removeItem(authTokenKey);
+}
+
 function validateCreateUser(user) {
   let formErrors = [];
   let messages = [];
@@ -182,9 +216,9 @@ function validateCreateUser(user) {
 // THUNKS
 const base = process.env.REACT_APP_HOST;
 
-export function createUser(user) {
+export function createUser(params, history) {
   return async dispatch => {
-    const { formErrors, messages } = validateCreateUser(user);
+    const { formErrors, messages } = validateCreateUser(params);
 
     if (formErrors.length > 0) {
       return dispatch(setSignupFormErrors(formErrors, messages));
@@ -196,20 +230,23 @@ export function createUser(user) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(user)
+        body: JSON.stringify(params)
       });
 
-      const createdUser = await response.json();
+      const { user, token } = await response.json();
 
-      return dispatch(createUserFulfilled(createdUser));
+      setCurrentUserInLocalStorage(user, token);
+      history.replace("/");
+      return dispatch(createUserFulfilled(user));
     } catch (err) {
       console.log(err);
+      removeUserFromLocalStorage();
       return dispatch(createUserFailed(err));
     }
   };
 }
 
-export function logInUser(user) {
+export function logInUser(params, history) {
   return async dispatch => {
     try {
       const response = await fetch(`${base}/authenticate`, {
@@ -217,15 +254,30 @@ export function logInUser(user) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(user)
+        body: JSON.stringify(params)
       });
 
-      const authenticatedUser = await response.json();
+      const { user, token } = await response.json();
 
-      return dispatch(logInUserFulfilled(authenticatedUser));
+      setCurrentUserInLocalStorage(user, token);
+      history.replace("/");
+      return dispatch(logInUserFulfilled(user));
     } catch (err) {
       console.log(err);
+      removeUserFromLocalStorage();
       return dispatch(logInUserFailed(err));
     }
   };
+}
+
+export function logOutUser(history) {
+  removeUserFromLocalStorage();
+  history.replace("/");
+  return {
+    type: LOG_OUT_USER
+  };
+}
+
+export function isUserLoggedIn(user) {
+  return user && user._id;
 }

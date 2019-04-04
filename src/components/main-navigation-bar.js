@@ -1,16 +1,24 @@
-import React, { Component } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import { Menu } from "semantic-ui-react";
+import { Menu, Button } from "semantic-ui-react";
+import { connect } from "react-redux";
+import { isUserLoggedIn, logOutUser } from "../modules/users";
 
-class MainNavigationBar extends Component {
-  render() {
-    return (
-      <Menu secondary>
-        <Menu.Item>
-          <Link className="app__header-logo" to="/">
-            CampQuest
-          </Link>
-        </Menu.Item>
+const MainNavigationBar = ({ currentUser, history, handleLogOut }) => {
+  return (
+    <Menu secondary>
+      <Menu.Item>
+        <Link className="app__header-logo" to="/">
+          CampQuest
+        </Link>
+      </Menu.Item>
+      {isUserLoggedIn(currentUser) ? (
+        <Menu.Menu position="right">
+          <Menu.Item>
+            <Button onClick={() => handleLogOut(history)}>Sign Out</Button>
+          </Menu.Item>
+        </Menu.Menu>
+      ) : (
         <Menu.Menu position="right">
           <Menu.Item>
             <Link to="/signup">Sign Up</Link>
@@ -19,9 +27,12 @@ class MainNavigationBar extends Component {
             <Link to="/login">Log In</Link>
           </Menu.Item>
         </Menu.Menu>
-      </Menu>
-    );
-  }
-}
+      )}
+    </Menu>
+  );
+};
 
-export default MainNavigationBar;
+export default connect(
+  null,
+  { handleLogOut: logOutUser }
+)(MainNavigationBar);
