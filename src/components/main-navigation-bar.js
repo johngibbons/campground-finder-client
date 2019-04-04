@@ -8,7 +8,7 @@ class MainNavigationBar extends Component {
       <Menu secondary>
         <Menu.Item>
           <Link className="app__header-logo" to="/">
-            Campsite Finder
+            CampQuest
           </Link>
         </Menu.Item>
         <Menu.Menu position="right">

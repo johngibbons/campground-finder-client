@@ -58,7 +58,7 @@ const Login = ({
               Not a member yet? Sign up <Link to="/signup">here</Link>
             </div>
           </Form.Field>
-          <Form.Button>Log in</Form.Button>
+          <Form.Button primary>Log in</Form.Button>
           <Message
             error
             header="There was some errors with your submission"

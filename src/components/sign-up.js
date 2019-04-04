@@ -83,7 +83,7 @@ const SignUp = ({
               Already a member? Log in <Link to="/login">here</Link>
             </div>
           </Form.Field>
-          <Form.Button>Sign up</Form.Button>
+          <Form.Button primary>Sign up</Form.Button>
           <Message
             error
             header="There was some errors with your submission"
