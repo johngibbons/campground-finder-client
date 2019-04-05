@@ -4,11 +4,13 @@ const BLUR_SIGNUP_FIELD = "users/BLUR_SIGNUP_FIELD";
 const CREATE_USER_FULFILLED = "users/CREATE_USER_FULFILLED";
 const CREATE_USER_FAILED = "users/CREATE_USER_FAILED";
 const SET_SIGNUP_FORM_ERRORS = "users/SET_SIGNUP_FORM_ERRORS";
+const CLEAR_SIGNUP_FORM_ERRORS = "users/CLEAR_SIGNUP_FORM_ERRORS";
 const UPDATE_LOGIN_FIELD = "users/UPDATE_LOGIN_FIELD";
 const BLUR_LOGIN_FIELD = "users/BLUR_LOGIN_FIELD";
 const LOG_IN_USER_FULFILLED = "users/LOG_IN_USER_FULFILLED";
 const LOG_IN_USER_FAILED = "users/LOG_IN_USER_FAILED";
 const SET_LOGIN_FORM_ERRORS = "users/SET_LOGIN_FORM_ERRORS";
+const CLEAR_LOGIN_FORM_ERRORS = "users/CLEAR_LOGIN_FORM_ERRORS";
 const LOG_OUT_USER = "users/LOG_OUT_USER";
 const currentUserKey = "campquest:currentUser";
 const authTokenKey = "campquest:auth";
@@ -47,6 +49,9 @@ function signUp(state = signUpInitialState, action = {}) {
     case SET_SIGNUP_FORM_ERRORS: {
       return { ...state, formErrors: action.messages };
     }
+    case CLEAR_SIGNUP_FORM_ERRORS: {
+      return { ...state, formErrors: [] };
+    }
     default: {
       return state;
     }
@@ -78,6 +83,9 @@ function login(state = loginInitialState, action = {}) {
     }
     case SET_LOGIN_FORM_ERRORS: {
       return { ...state, formErrors: action.messages };
+    }
+    case CLEAR_LOGIN_FORM_ERRORS: {
+      return { ...state, formErrors: [] };
     }
     default: {
       return state;
@@ -148,6 +156,12 @@ function setSignupFormErrors(formErrors, messages) {
   };
 }
 
+function clearSignupFormErrors() {
+  return {
+    type: CLEAR_SIGNUP_FORM_ERRORS
+  };
+}
+
 function logInUserFulfilled(user) {
   return {
     type: LOG_IN_USER_FULFILLED,
@@ -185,6 +199,12 @@ function setLoginFormErrors(formErrors, messages) {
   };
 }
 
+function clearLoginFormErrors() {
+  return {
+    type: CLEAR_LOGIN_FORM_ERRORS
+  };
+}
+
 function setCurrentUserInLocalStorage(user, token) {
   localStorage.setItem(currentUserKey, JSON.stringify(user));
   localStorage.setItem(authTokenKey, token);
@@ -218,6 +238,7 @@ const base = process.env.REACT_APP_HOST;
 
 export function createUser(params, history) {
   return async dispatch => {
+    dispatch(clearSignupFormErrors());
     const { formErrors, messages } = validateCreateUser(params);
 
     if (formErrors.length > 0) {
@@ -258,6 +279,7 @@ export function createUser(params, history) {
 
 export function logInUser(params, history) {
   return async dispatch => {
+    dispatch(clearLoginFormErrors());
     try {
       const response = await fetch(`${base}/authenticate`, {
         method: "post",
@@ -275,12 +297,12 @@ export function logInUser(params, history) {
       } else {
         const { error } = await response.json();
         removeUserFromLocalStorage();
-        return dispatch(setLoginFormErrors(nulll, [error]));
+        return dispatch(setLoginFormErrors(null, [error]));
       }
     } catch (err) {
       removeUserFromLocalStorage();
       return dispatch(
-        setLoginFormErrors(nulll, [
+        setLoginFormErrors(null, [
           "There was an error in your submission. Please try again."
         ])
       );

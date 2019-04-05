@@ -46,10 +46,7 @@ const Login = ({
             error={email.isDirty && !email.value}
             required
           />
-          <Form.Field
-            required
-            error={password.isDirty && password.value.length < 8}
-          >
+          <Form.Field required>
             <label htmlFor="login-password">Password</label>
             <input
               id="login-password"
@@ -57,6 +54,7 @@ const Login = ({
               onChange={e => handleUpdateField(LOGIN_PASSWORD, e.target.value)}
               onBlur={() => handleBlurField(LOGIN_PASSWORD)}
               value={password.value}
+              required
             />
             <div className="text-color--gray">
               Not a member yet? Sign up <Link to="/signup">here</Link>
