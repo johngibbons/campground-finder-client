@@ -247,7 +247,11 @@ export function createUser(params, history) {
     } catch (err) {
       console.log(err);
       removeUserFromLocalStorage();
-      return dispatch(createUserFailed(err));
+      return dispatch(
+        setSignupFormErrors(null, [
+          "There was an error in your submission. Please try again."
+        ])
+      );
     }
   };
 }
@@ -263,15 +267,23 @@ export function logInUser(params, history) {
         body: JSON.stringify(params)
       });
 
-      const { user, token } = await response.json();
-
-      setCurrentUserInLocalStorage(user, token);
-      history.replace("/");
-      return dispatch(logInUserFulfilled(user));
+      if (response.ok) {
+        const { user, token } = await response.json();
+        setCurrentUserInLocalStorage(user, token);
+        history.replace("/");
+        return dispatch(logInUserFulfilled(user));
+      } else {
+        const { error } = await response.json();
+        removeUserFromLocalStorage();
+        return dispatch(setLoginFormErrors(nulll, [error]));
+      }
     } catch (err) {
-      console.log(err);
       removeUserFromLocalStorage();
-      return dispatch(logInUserFailed(err));
+      return dispatch(
+        setLoginFormErrors(nulll, [
+          "There was an error in your submission. Please try again."
+        ])
+      );
     }
   };
 }
