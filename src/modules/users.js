@@ -142,7 +142,7 @@ function createUserFailed(error) {
 
 function setSignupFormErrors(formErrors, messages) {
   return {
-    type: SET_LOGIN_FORM_ERRORS,
+    type: SET_SIGNUP_FORM_ERRORS,
     formErrors,
     messages
   };
@@ -233,11 +233,17 @@ export function createUser(params, history) {
         body: JSON.stringify(params)
       });
 
-      const { user, token } = await response.json();
+      if (response.ok) {
+        const { user, token } = await response.json();
 
-      setCurrentUserInLocalStorage(user, token);
-      history.replace("/");
-      return dispatch(createUserFulfilled(user));
+        setCurrentUserInLocalStorage(user, token);
+        history.replace("/");
+        return dispatch(createUserFulfilled(user));
+      } else {
+        const { error } = await response.json();
+        removeUserFromLocalStorage();
+        return dispatch(setSignupFormErrors(null, [error]));
+      }
     } catch (err) {
       console.log(err);
       removeUserFromLocalStorage();
@@ -272,7 +278,7 @@ export function logInUser(params, history) {
 
 export function logOutUser(history) {
   removeUserFromLocalStorage();
-  history.replace("/");
+  history.replace("/login");
   return {
     type: LOG_OUT_USER
   };

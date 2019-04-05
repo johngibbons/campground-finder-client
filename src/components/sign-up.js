@@ -76,8 +76,8 @@ const SignUp = ({
             <input
               id="sign-up-password-confirm"
               type="password"
-              onChange={(e, { value }) =>
-                handleUpdateField(SIGN_UP_PASSWORD_CONFIRM, value)
+              onChange={e =>
+                handleUpdateField(SIGN_UP_PASSWORD_CONFIRM, e.target.value)
               }
               onBlur={() => handleBlurField(SIGN_UP_PASSWORD_CONFIRM)}
               value={passwordConfirm.value}
@@ -90,7 +90,7 @@ const SignUp = ({
           <Form.Button primary>Sign up</Form.Button>
           <Message
             error
-            header="There was some errors with your submission"
+            header="There were some errors with your submission"
             list={formErrors}
             visible={formErrors.length > 0}
           />
