@@ -12,8 +12,8 @@ const LOG_IN_USER_FAILED = "users/LOG_IN_USER_FAILED";
 const SET_LOGIN_FORM_ERRORS = "users/SET_LOGIN_FORM_ERRORS";
 const CLEAR_LOGIN_FORM_ERRORS = "users/CLEAR_LOGIN_FORM_ERRORS";
 const LOG_OUT_USER = "users/LOG_OUT_USER";
-const currentUserKey = "campquest:currentUser";
-const authTokenKey = "campquest:auth";
+export const CURRENT_USER_KEY = "campquest:currentUser";
+export const AUTH_TOKEN_KEY = "campquest:auth";
 const EMAIL_REGEX = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 export const SIGN_UP_EMAIL = "SIGN_UP_EMAIL";
@@ -94,7 +94,7 @@ function login(state = loginInitialState, action = {}) {
 }
 
 const loggedInUserFromLocalStorage = JSON.parse(
-  localStorage.getItem(currentUserKey)
+  localStorage.getItem(CURRENT_USER_KEY)
 );
 const currentUserInitialState = loggedInUserFromLocalStorage || {};
 
@@ -206,13 +206,13 @@ function clearLoginFormErrors() {
 }
 
 function setCurrentUserInLocalStorage(user, token) {
-  localStorage.setItem(currentUserKey, JSON.stringify(user));
-  localStorage.setItem(authTokenKey, token);
+  localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
+  localStorage.setItem(AUTH_TOKEN_KEY, token);
 }
 
 function removeUserFromLocalStorage() {
-  localStorage.removeItem(currentUserKey);
-  localStorage.removeItem(authTokenKey);
+  localStorage.removeItem(CURRENT_USER_KEY);
+  localStorage.removeItem(AUTH_TOKEN_KEY);
 }
 
 function validateCreateUser(user) {

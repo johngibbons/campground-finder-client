@@ -3,6 +3,7 @@ import { Route, withRouter } from "react-router-dom";
 import { Container } from "semantic-ui-react";
 import { connect } from "react-redux";
 import MainNavigationBar from "./components/main-navigation-bar";
+import PrivateRoute from "./components/private-route";
 import Home from "./components/home";
 import SignUp from "./components/sign-up";
 import Login from "./components/login";
@@ -20,7 +21,7 @@ class App extends Component {
         </header>
         <main className="app__main">
           <Container>
-            <Route exact path="/" component={Home} />
+            <PrivateRoute exact path="/" component={Home} />
             <Route path="/signup" component={SignUp} />
             <Route path="/login" component={Login} />
           </Container>
