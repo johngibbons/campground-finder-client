@@ -7,6 +7,7 @@ import PrivateRoute from "./components/private-route";
 import Home from "./components/home";
 import SignUp from "./components/sign-up";
 import Login from "./components/login";
+import CampsiteFinderCreation from "./components/campsite-finder-creation";
 import "./App.css";
 
 class App extends Component {
@@ -22,6 +23,10 @@ class App extends Component {
         <main className="app__main">
           <Container>
             <PrivateRoute exact path="/" component={Home} />
+            <PrivateRoute
+              path="/create-alert"
+              component={CampsiteFinderCreation}
+            />
             <Route path="/signup" component={SignUp} />
             <Route path="/login" component={Login} />
           </Container>

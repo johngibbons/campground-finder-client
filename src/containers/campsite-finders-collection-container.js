@@ -14,7 +14,14 @@ class CampsiteFindersCollectionContainer extends Component {
   }
 
   render() {
-    return <CampsiteFindersCollection {...this.props} />;
+    const { campsiteFinders, isLoaded, isError } = this.props;
+    return (
+      <CampsiteFindersCollection
+        campsiteFinders={campsiteFinders}
+        isLoaded={isLoaded}
+        isError={isError}
+      />
+    );
   }
 }
 
