@@ -19,6 +19,7 @@ import {
 } from "ramda";
 import { normalize, denormalize, schema } from "normalizr";
 import { campgroundSchema } from "./campgrounds";
+import addAuthHeader from "../helpers/addAuthHeader";
 
 const campsiteFinderSchema = new schema.Entity(
   "campsiteFinders",
@@ -29,35 +30,25 @@ const campsiteFinderSchema = new schema.Entity(
 );
 export const campsiteFinderListSchema = [campsiteFinderSchema];
 
-export const FETCH_ALL_FULFILLED =
-  "campground-finder/campsite-finders/FETCH_ALL_FULFILLED";
-const DELETE_FULFILLED = "campground-finder/campsite-finders/DELETE_FULFILLED";
-export const CREATE_FULFILLED =
-  "campground-finder/campsite-finders/CREATE_FULFILLED";
-export const UPDATE_FULFILLED =
-  "campground-finder/campsite-finders/UPDATE_FULFILLED";
-const SET_EMAIL_VALUE = "campground-finder/campsite-finders/SET_EMAIL_VALUE";
-const SET_SITE_CODE_VALUE =
-  "campground-finder/campsite-finders/SET_SITE_CODE_VALUE";
-const SET_DATE_FOCUS = "campground-finder/campsite-finders/SET_DATE_FOCUS";
-const SET_DATE_OPTION = "campground-finder/campsite-finders/SET_DATE_OPTION";
-const SET_DATES = "campground-finder/campsite-finders/SET_DATES";
-const ADD_EMAIL_ADDRESS =
-  "campground-finder/campsite-finders/ADD_EMAIL_ADDRESS";
-const REMOVE_EMAIL_ADDRESS =
-  "campground-finder/campsite-finders/REMOVE_EMAIL_ADDRESS";
-const TOGGLE_CONFIRM_MODAL =
-  "campground-finder/campsite-finders/TOGGLE_CONFIRM_MODAL";
-const TOGGLE_SHOW_ALL_RESULTS =
-  "campground-finder/campsite-finders/TOGGLE_SHOW_ALL_RESULTS";
+export const FETCH_ALL_FULFILLED = "campsite-finders/FETCH_ALL_FULFILLED";
+export const FETCH_ALL_FAILED = "campsite-finders/FETCH_ALL_FAILED";
+const DELETE_FULFILLED = "campsite-finders/DELETE_FULFILLED";
+export const CREATE_FULFILLED = "campsite-finders/CREATE_FULFILLED";
+export const UPDATE_FULFILLED = "campsite-finders/UPDATE_FULFILLED";
+const SET_EMAIL_VALUE = "campsite-finders/SET_EMAIL_VALUE";
+const SET_SITE_CODE_VALUE = "campsite-finders/SET_SITE_CODE_VALUE";
+const SET_DATE_FOCUS = "campsite-finders/SET_DATE_FOCUS";
+const SET_DATE_OPTION = "campsite-finders/SET_DATE_OPTION";
+const SET_DATES = "campsite-finders/SET_DATES";
+const ADD_EMAIL_ADDRESS = "campsite-finders/ADD_EMAIL_ADDRESS";
+const REMOVE_EMAIL_ADDRESS = "campsite-finders/REMOVE_EMAIL_ADDRESS";
+const TOGGLE_CONFIRM_MODAL = "campsite-finders/TOGGLE_CONFIRM_MODAL";
+const TOGGLE_SHOW_ALL_RESULTS = "campsite-finders/TOGGLE_SHOW_ALL_RESULTS";
 const TOGGLE_SETTINGS_FORM_SHOWING =
-  "campground-finder/campsite-finders/TOGGLE_SETTINGS_FORM_SHOWING";
-const CANCEL_EDIT_SETTINGS =
-  "campground-finder/campsite-finders/CANCEL_EDIT_SETTINGS";
-const TOGGLE_IS_WEEKENDS_ONLY =
-  "campground-finder/campsite-finders/TOGGLE_IS_WEEKENDS_ONLY";
-const TOGGLE_IS_SENDING_EMAILS =
-  "campground-finder/campsite-finders/TOGGLE_IS_SENDING_EMAILS";
+  "campsite-finders/TOGGLE_SETTINGS_FORM_SHOWING";
+const CANCEL_EDIT_SETTINGS = "campsite-finders/CANCEL_EDIT_SETTINGS";
+const TOGGLE_IS_WEEKENDS_ONLY = "campsite-finders/TOGGLE_IS_WEEKENDS_ONLY";
+const TOGGLE_IS_SENDING_EMAILS = "campsite-finders/TOGGLE_IS_SENDING_EMAILS";
 
 export const NEXT_SIX_MONTHS = "NEXT_SIX_MONTHS";
 export const SPECIFIC_DATES = "SPECIFIC_DATES";
@@ -98,6 +89,9 @@ function ids(state = [], action = {}) {
     case FETCH_ALL_FULFILLED: {
       return action.campsiteFinders.map(campsiteFinder => campsiteFinder._id);
     }
+    case FETCH_ALL_FAILED: {
+      return [];
+    }
     case DELETE_FULFILLED: {
       return without(action.id, state);
     }
@@ -119,6 +113,9 @@ function objs(state = {}, action = {}) {
       const campsiteFinders = path(["entities", "campsiteFinders"], normalized);
       if (!campsiteFinders) return state;
       return map(finder => ({ ...finder, cache: finder }), campsiteFinders);
+    }
+    case FETCH_ALL_FAILED: {
+      return {};
     }
     case UPDATE_FULFILLED:
     case CREATE_FULFILLED: {
@@ -202,10 +199,13 @@ function objs(state = {}, action = {}) {
   }
 }
 
-function ui(state = { isLoaded: false }, action = {}) {
+function ui(state = { isLoaded: false, isError: false }, action = {}) {
   switch (action.type) {
     case FETCH_ALL_FULFILLED: {
       return { ...state, isLoaded: true };
+    }
+    case FETCH_ALL_FAILED: {
+      return { ...state, isLoaded: true, isError: true };
     }
     default:
       return state;
@@ -332,6 +332,13 @@ function fetchAllFulfilled(campsiteFinders) {
   };
 }
 
+function fetchAllFailed(error) {
+  return {
+    type: FETCH_ALL_FAILED,
+    error
+  };
+}
+
 function updateCampsiteFinderFulfilled(campsiteFinder) {
   return {
     type: UPDATE_FULFILLED,
@@ -352,6 +359,8 @@ const campsiteFinderIdsSelector = state => state.campsiteFinders.ids;
 const campgroundObjsSelector = state => state.campgrounds.objs;
 export const isFindersCollectionLoadedSelector = state =>
   state.campsiteFinders.ui.isLoaded;
+export const isFindersCollectionErrorSelector = state =>
+  state.campsiteFinders.ui.isError;
 const sortByCreatedAt = compose(
   reverse,
   sortBy(prop("createdAt"))
@@ -377,10 +386,19 @@ const base = process.env.REACT_APP_HOST;
 export function fetchAllCampsiteFinders() {
   return async dispatch => {
     try {
-      const response = await fetch(`${base}/campsite-finders`);
-      const campsiteFinders = await response.json();
+      const response = await fetch(`${base}/campsite-finders`, {
+        headers: addAuthHeader({
+          "Content-Type": "application/json"
+        })
+      });
 
-      return dispatch(fetchAllFulfilled(campsiteFinders));
+      if (response.ok) {
+        const campsiteFinders = await response.json();
+        return dispatch(fetchAllFulfilled(campsiteFinders));
+      } else {
+        const { error } = await response.json();
+        return dispatch(fetchAllFailed(error));
+      }
     } catch (err) {
       console.log(err);
     }
@@ -392,9 +410,9 @@ export function createCampsiteFinder(params) {
     try {
       const response = await fetch(`${base}/campsite-finders`, {
         method: "post",
-        headers: {
+        headers: addAuthHeader({
           "Content-Type": "application/json"
-        },
+        }),
         body: JSON.stringify(params)
       });
       const campsiteFinder = await response.json();
@@ -420,9 +438,9 @@ export function updateCampsiteFinder(id, params) {
     try {
       const response = await fetch(`${base}/campsite-finders/${id}`, {
         method: "put",
-        headers: {
+        headers: addAuthHeader({
           "Content-Type": "application/json"
-        },
+        }),
         body: changedAttrs(JSON.stringify(params))
       });
       const campsiteFinder = await response.json();
@@ -438,7 +456,10 @@ export function deleteCampsiteFinder(id) {
   return async dispatch => {
     try {
       await fetch(`${base}/campsite-finders/${id}`, {
-        method: "delete"
+        method: "delete",
+        headers: addAuthHeader({
+          "Content-Type": "application/json"
+        })
       });
 
       return dispatch(deleteCampsiteFinderFulfilled(id));

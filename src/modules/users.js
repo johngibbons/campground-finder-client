@@ -13,7 +13,6 @@ const SET_LOGIN_FORM_ERRORS = "users/SET_LOGIN_FORM_ERRORS";
 const CLEAR_LOGIN_FORM_ERRORS = "users/CLEAR_LOGIN_FORM_ERRORS";
 const LOG_OUT_USER = "users/LOG_OUT_USER";
 export const CURRENT_USER_KEY = "campquest:currentUser";
-export const AUTH_TOKEN_KEY = "campquest:auth";
 const EMAIL_REGEX = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 export const SIGN_UP_EMAIL = "SIGN_UP_EMAIL";
@@ -205,14 +204,12 @@ function clearLoginFormErrors() {
   };
 }
 
-function setCurrentUserInLocalStorage(user, token) {
+function setCurrentUserInLocalStorage(user) {
   localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
-  localStorage.setItem(AUTH_TOKEN_KEY, token);
 }
 
 function removeUserFromLocalStorage() {
   localStorage.removeItem(CURRENT_USER_KEY);
-  localStorage.removeItem(AUTH_TOKEN_KEY);
 }
 
 function validateCreateUser(user) {
@@ -255,9 +252,9 @@ export function createUser(params, history) {
       });
 
       if (response.ok) {
-        const { user, token } = await response.json();
+        const { user } = await response.json();
 
-        setCurrentUserInLocalStorage(user, token);
+        setCurrentUserInLocalStorage(user);
         history.replace("/");
         return dispatch(createUserFulfilled(user));
       } else {
@@ -290,8 +287,8 @@ export function logInUser(params, history) {
       });
 
       if (response.ok) {
-        const { user, token } = await response.json();
-        setCurrentUserInLocalStorage(user, token);
+        const { user } = await response.json();
+        setCurrentUserInLocalStorage(user);
         history.replace("/");
         return dispatch(logInUserFulfilled(user));
       } else {
