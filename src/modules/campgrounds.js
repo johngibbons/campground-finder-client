@@ -26,14 +26,12 @@ const QUERY_FULFILLED = "campground-finder/campgrounds/QUERY_FULFILLED";
 // REDUCERS
 const attrs = [
   "_id",
-  "facilityName",
-  "placeName",
+  "secondaryName",
+  "name",
   "facilityId",
-  "facilityPhoto",
+  "image",
   "latitude",
   "longitude",
-  "regionName",
-  "shortName",
   "state"
 ];
 
@@ -72,7 +70,7 @@ function objs(state = {}, action = {}) {
     case QUERY_FULFILLED: {
       const normalized = normalize(
         compose(
-          map(setToCapitalize("placeName")),
+          map(setToCapitalize("name")),
           project(attrs)
         )(action.campgrounds),
         campgroundListSchema
@@ -111,12 +109,12 @@ const campgroundIdsSelector = state => state.campgrounds.ids;
 const searchResultsCampgrounds = state => state.campgrounds.queryIds;
 
 const mapToOptions = objs => {
-  return objs.map(({ facilityName, placeName, _id, state }) => {
+  return objs.map(({ name, secondaryName, _id }) => {
     return {
       key: _id,
-      text: placeName,
+      text: name,
       value: _id,
-      description: facilityName || state
+      description: secondaryName
     };
   });
 };

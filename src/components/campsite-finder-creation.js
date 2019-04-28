@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Container, Header, Form, Label, Input } from "semantic-ui-react";
+import { Container, Header, Form, Label, Input, List } from "semantic-ui-react";
 import {
   NAME_FIELD,
   FINDER_TYPE_FIELD,
@@ -9,15 +9,19 @@ import {
   FOCUSED_DATE_FIELD,
   NIGHTS_OF_THE_WEEK_FIELD,
   ALL_NIGHTS_OF_THE_WEEK_TOGGLE,
+  MIN_NIGHTS_FIELD,
   SPECIFIC_TRIP,
-  CONTINUOUS,
+  GENERAL_AVAILABILITY,
   DAYS_OF_THE_WEEK,
   updateField,
   blurField,
   setDates,
   toggleNightOfTheWeek,
   toggleAllNightsOfTheWeek,
-  MIN_NIGHTS_FIELD
+  selectCampground,
+  campgroundsSelector,
+  createCampsiteFinder,
+  createFormJsonSelector
 } from "../modules/createCampsiteFinder";
 import moment from "moment";
 import { both, map } from "ramda";
@@ -34,12 +38,16 @@ const CampsiteFinderCreation = ({
   nightsOfTheWeek,
   allNightsOfTheWeekToggle,
   minNights,
+  campgrounds,
+  formJson,
+  history,
   handleBlurField,
   handleUpdateField,
   handleSetDates,
   handleToggleNightOfTheWeek,
   handleToggleAllNightsOfTheWeek,
-  handleSelectCampground
+  handleSelectCampground,
+  handleFormSubmit
 }) => {
   const numNights =
     startDate && endDate && moment(endDate).diff(startDate, "days");
@@ -48,7 +56,7 @@ const CampsiteFinderCreation = ({
     <section className="campsite-finder-creation">
       <Container text>
         <Header as="h1">Create an Alert</Header>
-        <Form>
+        <Form onSubmit={() => handleFormSubmit(formJson, history)}>
           <Form.Group inline>
             <label>What type of alert?</label>
             <Form.Radio
@@ -61,9 +69,11 @@ const CampsiteFinderCreation = ({
             />
             <Form.Radio
               label="Continuos Monitoring"
-              value={CONTINUOUS}
-              checked={finderType.value === CONTINUOUS}
-              onChange={() => handleUpdateField(FINDER_TYPE_FIELD, CONTINUOUS)}
+              value={GENERAL_AVAILABILITY}
+              checked={finderType.value === GENERAL_AVAILABILITY}
+              onChange={() =>
+                handleUpdateField(FINDER_TYPE_FIELD, GENERAL_AVAILABILITY)
+              }
             />
           </Form.Group>
           <Form.Input
@@ -108,7 +118,7 @@ const CampsiteFinderCreation = ({
               )}
             </Form.Field>
           )}
-          {finderType.value === CONTINUOUS && (
+          {finderType.value === GENERAL_AVAILABILITY && (
             <Form.Group grouped>
               <label>Which nights of the week do you want to check for?</label>
               <Form.Checkbox
@@ -131,7 +141,7 @@ const CampsiteFinderCreation = ({
               </div>
             </Form.Group>
           )}
-          {finderType.value === CONTINUOUS && (
+          {finderType.value === GENERAL_AVAILABILITY && (
             <Form.Field error={minNights.isDirty && !minNights.value} required>
               <label htmlFor="campsite-finder-creation-min-nights-field">
                 What is the minimum number of nights you want to camp for?
@@ -158,6 +168,21 @@ const CampsiteFinderCreation = ({
               onSelectCampground={handleSelectCampground}
             />
           </Form.Field>
+          <List selection relaxed>
+            {campgrounds.map(campground => {
+              return (
+                <List.Item>
+                  <List.Content>
+                    <List.Header>{campground.name}</List.Header>
+                    <List.Description>
+                      {campground.secondaryName}
+                    </List.Description>
+                  </List.Content>
+                </List.Item>
+              );
+            })}
+          </List>
+          <Form.Button primary>Create Alert</Form.Button>
         </Form>
       </Container>
     </section>
@@ -175,7 +200,9 @@ const mapStateToProps = state => {
     nightsOfTheWeek: createCampsiteFinderState[NIGHTS_OF_THE_WEEK_FIELD],
     allNightsOfTheWeekToggle:
       createCampsiteFinderState[ALL_NIGHTS_OF_THE_WEEK_TOGGLE],
-    minNights: createCampsiteFinderState[MIN_NIGHTS_FIELD]
+    minNights: createCampsiteFinderState[MIN_NIGHTS_FIELD],
+    campgrounds: campgroundsSelector(state),
+    formJson: createFormJsonSelector(state)
   };
 };
 
@@ -189,8 +216,8 @@ export default connect(
     handleToggleNightOfTheWeek: nightOfTheWeek =>
       toggleNightOfTheWeek({ nightOfTheWeek }),
     handleToggleAllNightsOfTheWeek: toggleAllNightsOfTheWeek,
-    handleSelectCampground: ({ campgroundId }) => {
-      console.log("campground", campgroundId);
-    }
+    handleSelectCampground: campgroundId => selectCampground({ campgroundId }),
+    handleFormSubmit: (formBody, history) =>
+      createCampsiteFinder({ formBody, history })
   }
 )(CampsiteFinderCreation);

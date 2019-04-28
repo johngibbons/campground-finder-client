@@ -18,7 +18,7 @@ const CampgroundSearch = ({
         openOnFocus={false}
         options={options}
         minCharacters={3}
-        onChange={(e, data) => onSelectCampground({ campgroundId: data.value })}
+        onChange={(e, data) => onSelectCampground(data.value)}
         fluid
         search={options => options}
         selection

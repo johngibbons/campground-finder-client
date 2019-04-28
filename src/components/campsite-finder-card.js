@@ -49,7 +49,7 @@ const CampsiteFinderCard = ({
     >
       <Card.Content extra>
         <Card.Header className="campsite-finder-card__header">
-          {captializeTitle(campgroundId.placeName)}
+          {captializeTitle(campgroundId.name)}
           <div className="campsite-finder-card__on-off">
             <Dropdown icon={isActive ? "pause" : "play"}>
               <Dropdown.Menu>
@@ -74,7 +74,7 @@ const CampsiteFinderCard = ({
             </Dropdown>
           </div>
         </Card.Header>
-        <Card.Meta>{campgroundId.facilityName}</Card.Meta>
+        <Card.Meta>{campgroundId.secondaryName}</Card.Meta>
       </Card.Content>
       <div className="campsite-finder-card__image-wrapper">
         <a
@@ -84,7 +84,7 @@ const CampsiteFinderCard = ({
         >
           <Image
             className="campsite-finder-card__campground-image"
-            src={replaceImages(campgroundId.facilityPhoto)}
+            src={replaceImages(campgroundId.image)}
           />
         </a>
       </div>
