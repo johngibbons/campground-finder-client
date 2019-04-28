@@ -42,7 +42,6 @@ const CampsiteFinderCard = ({
     lastCheckedAt
   } = campsiteFinder;
   const hasAvailableSites = datesAvailable.length > 0;
-  console.log(campgroundId);
   return (
     <Card
       className="campsite-finder-card"

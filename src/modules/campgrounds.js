@@ -108,34 +108,17 @@ function queryFulfilled(campgrounds) {
 // SELECTORS
 const campgroundObjsSelector = state => state.campgrounds.objs;
 const campgroundIdsSelector = state => state.campgrounds.ids;
-const fiveCampgrounds = state => take(5, state.campgrounds.queryIds);
-const raKeysMap = {
-  facilityId: "key",
-  placeName: "text",
-  _id: "value",
-  state: "description"
-};
-const rcaKeysMap = {
-  facilityId: "key",
-  placeName: "text",
-  _id: "value",
-  facilityName: "description"
-};
-
-const keysFilter = ["key", "text", "value", "description"];
+const searchResultsCampgrounds = state => state.campgrounds.queryIds;
 
 const mapToOptions = objs => {
-  return objs.map(obj =>
-    obj.facilityName
-      ? compose(
-          pick(keysFilter),
-          renameKeys(rcaKeysMap)
-        )(obj)
-      : compose(
-          pick(keysFilter),
-          renameKeys(raKeysMap)
-        )(obj)
-  );
+  return objs.map(({ facilityName, placeName, _id, state }) => {
+    return {
+      key: _id,
+      text: placeName,
+      value: _id,
+      description: facilityName || state
+    };
+  });
 };
 
 export const campgroundsSelector = createSelector(
@@ -146,7 +129,7 @@ export const campgroundsSelector = createSelector(
 
 export const campgroundResultsSelector = createSelector(
   campgroundObjsSelector,
-  fiveCampgrounds,
+  searchResultsCampgrounds,
   mapObjsToIds
 );
 
@@ -164,8 +147,10 @@ export function queryCampgrounds(query) {
       return;
     }
     const response = await fetch(`${base}/campgrounds?q=${query}`);
-    const campgrounds = await response.json();
 
-    return dispatch(queryFulfilled(campgrounds));
+    if (response.ok) {
+      const campgrounds = await response.json();
+      return dispatch(queryFulfilled(campgrounds));
+    }
   };
 }

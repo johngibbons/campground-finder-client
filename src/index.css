@@ -7,3 +7,7 @@ body {
 .text-color--gray {
   color: rgb(150, 150, 150);
 }
+
+.text-capitalized {
+  text-transform: capitalize;
+}

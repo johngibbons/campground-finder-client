@@ -1,21 +1,20 @@
-import { connect } from 'react-redux'
+import { connect } from "react-redux";
 import {
-  campgroundResultsSelector,
   campgroundOptionsSelector,
   queryCampgrounds
-} from '../modules/campgrounds'
-import { createCampsiteFinder } from '../modules/campsiteFinders'
-import CampgroundSearch from '../components/campground-search'
+} from "../modules/campgrounds";
+import CampgroundSearch from "../components/campground-search";
 
-const mapStateToProps = state => {
+const mapStateToProps = (state, props) => {
   return {
-    query: state.campgrounds.query,
-    campgrounds: campgroundResultsSelector(state),
+    ...props,
     options: campgroundOptionsSelector(state)
-  }
-}
+  };
+};
 
-export default connect(mapStateToProps, {
-  handleQueryCampgrounds: queryCampgrounds,
-  handleCreateCampsiteFinder: createCampsiteFinder
-})(CampgroundSearch)
+export default connect(
+  mapStateToProps,
+  {
+    handleQueryCampgrounds: queryCampgrounds
+  }
+)(CampgroundSearch);

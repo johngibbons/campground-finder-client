@@ -4,10 +4,8 @@ import { Dropdown } from "semantic-ui-react";
 import "./campground-search.css";
 
 const CampgroundSearch = ({
-  query,
   handleQueryCampgrounds,
-  handleCreateCampsiteFinder,
-  campgrounds,
+  onSelectCampground,
   options
 }) => {
   return (
@@ -19,12 +17,10 @@ const CampgroundSearch = ({
         }
         openOnFocus={false}
         options={options}
-        minCharacters={4}
-        onChange={(e, data) =>
-          handleCreateCampsiteFinder({ campgroundId: data.value })
-        }
+        minCharacters={3}
+        onChange={(e, data) => onSelectCampground({ campgroundId: data.value })}
         fluid
-        search
+        search={options => options}
         selection
         selectOnBlur={false}
         selectOnNavigation={false}

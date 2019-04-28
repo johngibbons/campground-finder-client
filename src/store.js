@@ -1,14 +1,14 @@
-import { createStore, applyMiddleware, compose } from "redux";
 import { routerMiddleware } from "react-router-redux";
 import { createBrowserHistory } from "history";
-import thunk from "redux-thunk";
-import { rootReducer } from "./modules/root";
+import { configureStore, getDefaultMiddleware } from "redux-starter-kit";
+import campgrounds from "./modules/campgrounds";
+import campsiteFinders from "./modules/campsiteFinders";
+import createCampsiteFinder from "./modules/createCampsiteFinder";
+import users from "./modules/users";
 
 export const history = createBrowserHistory();
 
-const initialState = {};
 const enhancers = [];
-const middleware = [routerMiddleware(history), thunk];
 
 if (process.env.NODE_ENV === "development") {
   const devToolsExtension = window.devToolsExtension;
@@ -18,11 +18,10 @@ if (process.env.NODE_ENV === "development") {
   }
 }
 
-const composedEnhancers = compose(
-  applyMiddleware(...middleware),
-  ...enhancers
-);
-
-const store = createStore(rootReducer, initialState, composedEnhancers);
+const store = configureStore({
+  reducer: { campgrounds, campsiteFinders, createCampsiteFinder, users },
+  middleware: [...getDefaultMiddleware(), routerMiddleware(history)],
+  enhancers
+});
 
 export default store;
