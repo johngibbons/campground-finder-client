@@ -1,7 +1,0 @@
-/*******************************
-     User Global Variables
-*******************************/
-
-@primaryColor   : #D75D4E;
-@secondaryColor : #888C71;
-@linkColor      : #D9A552;
