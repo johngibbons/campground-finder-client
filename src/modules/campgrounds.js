@@ -1,10 +1,6 @@
 import { combineReducers } from "redux";
 import { createSelector } from "reselect";
-import {
-  mapObjsToIds,
-  renameKeys,
-  setToCapitalize
-} from "../helpers/reducerHelpers";
+import { mapObjsToIds, renameKeys } from "../helpers/reducerHelpers";
 import { take, compose, pick, map, path, keys, project } from "ramda";
 import { ajax } from "rxjs/observable/dom/ajax";
 import "rxjs/add/operator/mergeMap";
@@ -12,7 +8,7 @@ import "rxjs/add/operator/map";
 import "rxjs/add/operator/filter";
 import {
   FETCH_ALL_FULFILLED,
-  campsiteFinderListSchema
+  campsiteFinderListSchema,
 } from "./campsiteFinders";
 import { normalize, schema } from "normalizr";
 
@@ -39,13 +35,13 @@ const attrs = [
   "longitude",
   "regionName",
   "shortName",
-  "state"
+  "state",
 ];
 
 function queryIds(state = [], action = {}) {
   switch (action.type) {
     case QUERY_FULFILLED: {
-      return action.campgrounds.map(campgrounds => campgrounds._id);
+      return action.campgrounds.map((campgrounds) => campgrounds._id);
     }
     default:
       return state;
@@ -57,7 +53,7 @@ function ids(state = [], action = {}) {
     case QUERY_FULFILLED: {
       return [
         ...state,
-        ...action.campgrounds.map(campgrounds => campgrounds._id)
+        ...action.campgrounds.map((campgrounds) => campgrounds._id),
       ];
     }
     case FETCH_ALL_FULFILLED: {
@@ -76,10 +72,7 @@ function objs(state = {}, action = {}) {
   switch (action.type) {
     case QUERY_FULFILLED: {
       const normalized = normalize(
-        compose(
-          map(setToCapitalize("placeName")),
-          project(attrs)
-        )(action.campgrounds),
+        compose(project(attrs))(action.campgrounds),
         campgroundListSchema
       );
       const campgrounds = path(["entities", "campgrounds"], normalized);
@@ -100,55 +93,54 @@ function objs(state = {}, action = {}) {
 export default combineReducers({
   queryIds,
   ids,
-  objs
+  objs,
 });
 
 // ACTION CREATORS
 export function queryCampgrounds(query) {
   return {
     type: QUERY,
-    query
+    query,
   };
 }
 
 function queryFulfilled(campgrounds) {
   return {
     type: QUERY_FULFILLED,
-    campgrounds
+    campgrounds,
   };
 }
 
 // SELECTORS
-const campgroundObjsSelector = state => state.campgrounds.objs;
-const campgroundIdsSelector = state => state.campgrounds.ids;
-const fiveCampgrounds = state => take(5, state.campgrounds.queryIds);
+const campgroundObjsSelector = (state) => state.campgrounds.objs;
+const campgroundIdsSelector = (state) => state.campgrounds.ids;
+const campgroundQueryIdsSelector = (state) => state.campgrounds.queryIds;
 const raKeysMap = {
   facilityId: "key",
   placeName: "text",
   _id: "value",
-  state: "description"
+  state: "description",
 };
 const rcaKeysMap = {
   facilityId: "key",
   placeName: "text",
   _id: "value",
-  facilityName: "description"
+  facilityName: "description",
 };
 
 const keysFilter = ["key", "text", "value", "description"];
 
-const mapToOptions = objs => {
-  return objs.map(
-    obj =>
-      obj.facilityName
-        ? compose(
-            pick(keysFilter),
-            renameKeys(rcaKeysMap)
-          )(obj)
-        : compose(
-            pick(keysFilter),
-            renameKeys(raKeysMap)
-          )(obj)
+const mapToOptions = (objs) => {
+  return objs.map((obj) =>
+    obj.facilityName
+      ? compose(
+          pick(keysFilter),
+          renameKeys(rcaKeysMap)
+        )(obj)
+      : compose(
+          pick(keysFilter),
+          renameKeys(raKeysMap)
+        )(obj)
   );
 };
 
@@ -160,7 +152,6 @@ export const campgroundsSelector = createSelector(
 
 export const campgroundResultsSelector = createSelector(
   campgroundObjsSelector,
-  fiveCampgrounds,
   mapObjsToIds
 );
 
@@ -172,12 +163,12 @@ export const campgroundOptionsSelector = createSelector(
 // EPICS
 const base = process.env.REACT_APP_HOST;
 
-export const queryCampgroundsEpic = action$ =>
+export const queryCampgroundsEpic = (action$) =>
   action$
     .ofType(QUERY)
-    .filter(action => action.query && action.query.length > 3)
-    .mergeMap(action =>
+    .filter((action) => action.query && action.query.length > 3)
+    .mergeMap((action) =>
       ajax
         .getJSON(`${base}/campgrounds?q=${action.query}`)
-        .map(response => queryFulfilled(response))
+        .map((response) => queryFulfilled(response))
     );
