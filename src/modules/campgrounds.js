@@ -152,6 +152,7 @@ export const campgroundsSelector = createSelector(
 
 export const campgroundResultsSelector = createSelector(
   campgroundObjsSelector,
+  campgroundQueryIdsSelector,
   mapObjsToIds
 );
 

@@ -4,11 +4,9 @@ import { Dropdown } from "semantic-ui-react";
 import "./campground-search.css";
 
 const CampgroundSearch = ({
-  query,
   handleQueryCampgrounds,
   handleCreateCampsiteFinder,
-  campgrounds,
-  options
+  options,
 }) => {
   return (
     <div className="campground-search">
@@ -24,8 +22,8 @@ const CampgroundSearch = ({
           handleCreateCampsiteFinder({ campgroundId: data.value })
         }
         fluid
-        search
         selection
+        search={(options) => options}
         selectOnBlur={false}
         selectOnNavigation={false}
         icon="search"
