@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "prettier-standard": "^6.0.0",
-    "standard": "^10.0.2"
+    "standard": "^17.1.2"
   },
   "engines": {
     "yarn": "YARN NO LONGER USED - use npm instead."
